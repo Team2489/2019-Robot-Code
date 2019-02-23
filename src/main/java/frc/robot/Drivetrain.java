@@ -10,13 +10,11 @@ public class Drivetrain {
     private DifferentialDrive ddrive;
     private SpeedControllerGroup left;
     private SpeedControllerGroup right;
-    public boolean underDriverControl = true;
 
     public Drivetrain(int frontLeft, int rearLeft, int frontRight, int rearRight) {
         left = new SpeedControllerGroup(new WPI_TalonSRX(frontLeft), new WPI_TalonSRX(rearLeft));
         right = new SpeedControllerGroup(new WPI_TalonSRX(frontRight), new WPI_TalonSRX(rearRight));
-        ddrive = new DifferentialDrive(left, right);
-        
+        ddrive = new DifferentialDrive(left, right);  
     }
 
     public void drive(double leftVelocity, double rightVelocity, int exit_or_enter) {
