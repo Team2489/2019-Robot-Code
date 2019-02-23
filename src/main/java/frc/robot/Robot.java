@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 public class Robot extends TimedRobot {
   
   private HatchGrabber hatchGrabber;
-  private boolean closed;
   private DriveControlManager dcm;
   private Drivetrain dtrain;
   private Arm arm;
@@ -33,7 +32,6 @@ public class Robot extends TimedRobot {
     CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
 
-  boolean timing = false;
   public void teleopPeriodic() {
 
     dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldExit());
