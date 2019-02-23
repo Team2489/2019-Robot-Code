@@ -10,9 +10,6 @@ public class Drivetrain {
     private DifferentialDrive ddrive;
     private SpeedControllerGroup left;
     private SpeedControllerGroup right;
-
-    private Timer exitTimer;
-
     public boolean underDriverControl = true;
 
     public Drivetrain(int frontLeft, int rearLeft, int frontRight, int rearRight) {
@@ -20,32 +17,15 @@ public class Drivetrain {
         right = new SpeedControllerGroup(new WPI_TalonSRX(frontRight), new WPI_TalonSRX(rearRight));
         ddrive = new DifferentialDrive(left, right);
         
-        exitTimer = new Timer();
     }
 
     public void drive(double leftVelocity, double rightVelocity, int exit_or_enter) {
         if(exit_or_enter == -1) {
             ddrive.tankDrive(leftVelocity, rightVelocity);
-            underDriverControl = true;
-        }
-        else {
-            if(underDriverControl) {
-                exitTimer.start();
-                underDriverControl = false;
-            }
-            if(exitTimer.get() >= 2) {
-                underDriverControl = true;
-                exitTimer.reset();
-            } else {
-                underDriverControl = false;
-            }
-            if(!underDriverControl) {
-                if(exit_or_enter == 0){
-                    ddrive.tankDrive(0.6, 0.6);
-                } else {
-                    ddrive.tankDrive(-0.6, -0.6);
-                }
-            }
+        } else if(exit_or_enter == 0) {
+            ddrive.tankDrive(0.6, 0.6);
+        } else {
+            ddrive.tankDrive(-0.6, -0.6);
         }
     }
     
