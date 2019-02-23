@@ -13,19 +13,16 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends TimedRobot {
   
-  private DoubleSolenoid hatchGrabber = new DoubleSolenoid(0,1);
-  
+  private HatchGrabber hatchGrabber;
   private boolean closed;
   private DriveControlManager dcm;
   private Drivetrain dtrain;
   private Arm arm;
 
-  
   private AnalogPotentiometer pot = new AnalogPotentiometer(0, 270, 0);
 
   @Override
   public void robotInit() {
-    closed = false;
     
     dcm = new DriveControlManager();
     dtrain = new Drivetrain(11, 12, 9, 10);
@@ -35,32 +32,20 @@ public class Robot extends TimedRobot {
     CameraServer.getInstance().startAutomaticCapture();
   }
 
-  Timer hatchTimer = new Timer();
   boolean timing = false;
   public void teleopPeriodic() {
+
     dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldExit());
     arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
-    if((dcm.shouldGrab() && closed) && !timing){
-      closed = false;
-      timing = true;
-      hatchTimer.start();
-      hatchGrabber.set(DoubleSolenoid.Value.kReverse);
-    }else if((dcm.shouldRelease() && !closed) && !timing){
-      closed = true;
-      timing = true;
-      hatchTimer.start();
-      hatchGrabber.set(DoubleSolenoid.Value.kForward);
-    }
 
-    // Sma.putNumber("Angle", pot.get());
-    System.out.println(1);
+    if(dcm.shouldGrab()) {
+      hatchGrabber.grab();
+    } else if(dcm.shouldRelease()) {
+      hatchGrabber.release();
+    }
 
     dcm.updateSquat();
-
-    if(hatchTimer.get() >= 1) {
-      hatchTimer.reset();
-      timing = false;
-    }
   }
+  
 }
 //parth was here
