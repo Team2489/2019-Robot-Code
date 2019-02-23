@@ -41,9 +41,9 @@ public class Drivetrain {
             }
             if(!underDriverControl) {
                 if(exit_or_enter == 0){
-                    ddrive.tankDrive(-0.6, -0.6);
-                }else if(exit_or_enter == 1){
                     ddrive.tankDrive(0.6, 0.6);
+                } else {
+                    ddrive.tankDrive(-0.6, -0.6);
                 }
             }
         }

@@ -37,7 +37,7 @@ public class DriveControlManager {
         return m_leftStick.getRawButton(2);
     }
 
-    public int shouldEnterOrExit() {
+    public int shouldEnterOrExit() { // 0 = exit, 1 = enter, -1 = human control
         if(m_rightStick.getTrigger()){
             return 0;
         }else if(m_leftStick.getTrigger()){

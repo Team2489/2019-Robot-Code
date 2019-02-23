@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends TimedRobot {
   
@@ -17,8 +18,12 @@ public class Robot extends TimedRobot {
   private DriveControlManager dcm;
   private Drivetrain dtrain;
   private Arm arm;
+  private Timer moveOffHab;
+  private double howLongShouldWeMove;
   @Override
   public void robotInit() {
+    howLongShouldWeMove = 3.0;
+    moveOffHab = new Timer();
     dcm = new DriveControlManager(); // DCM contains all driver configurations and input
     dtrain = new Drivetrain(11, 12, 9, 10); // initialize drivetrain with given TalonSRX indices
     arm = new Arm(1); // initialize Arm with TalonSRX index
@@ -41,9 +46,19 @@ public class Robot extends TimedRobot {
     dcm.updateSquat();
   }
 
-  public void autonomousPeriodic() {
-
+  public void autonomousInit() {
+    moveOffHab.start();
   }
-  
+
+  public void autonomousPeriodic() {
+    if(moveOffHab.get() <= howLongShouldWeMove){
+      dtrain.drive(0.6,0.6,-1);                                 
+    }else{
+      moveOffHab.reset();
+      moveOffHab.stop();
+
+      //insert drive code
+    }
+  }
 }
 //parth was here
