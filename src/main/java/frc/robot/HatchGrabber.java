@@ -4,7 +4,7 @@ public class HatchGrabber {
 
     private DoubleSolenoid hatchGrabber;
 
-    public HatchGrabber(int index){
+    public HatchGrabber(){
         hatchGrabber = new DoubleSolenoid(0,1); 
     }
 

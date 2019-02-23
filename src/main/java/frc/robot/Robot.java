@@ -24,12 +24,13 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     
-    dcm = new DriveControlManager();
-    dtrain = new Drivetrain(11, 12, 9, 10);
-    arm = new Arm(1);
+    dcm = new DriveControlManager(); // DCM contains all driver configurations and input
+    dtrain = new Drivetrain(11, 12, 9, 10); // initialize drivetrain with given TalonSRX indices
+    arm = new Arm(1); // initialize Arm with TalonSRX index
+    hatchGrabber = new HatchGrabber(); // initialize Hatch Grabber
    
 
-    CameraServer.getInstance().startAutomaticCapture();
+    CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
 
   boolean timing = false;

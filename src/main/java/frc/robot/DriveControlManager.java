@@ -30,11 +30,11 @@ public class DriveControlManager {
     }
 
     public boolean shouldGrab() {
-        return m_rightStick.getRawButton(2) || m_leftStick.getRawButton(2);
+        return m_rightStick.getRawButton(2);
     }
 
     public boolean shouldRelease() {
-        return shouldGrab();
+        return m_leftStick.getRawButton(2);
     }
 
     public boolean shouldExit() {
