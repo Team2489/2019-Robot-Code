@@ -37,10 +37,15 @@ public class DriveControlManager {
         return m_leftStick.getRawButton(2);
     }
 
-    public boolean shouldExit() {
-        return m_rightStick.getTrigger();
+    public int shouldEnterOrExit() {
+        if(m_rightStick.getTrigger()){
+            return 0;
+        }else if(m_leftStick.getTrigger()){
+            return 1;
+        }
+        return -1;
     }
-
+    
     public boolean shouldFreezeArm() {
         return xbox.getRawButton(8);
     }

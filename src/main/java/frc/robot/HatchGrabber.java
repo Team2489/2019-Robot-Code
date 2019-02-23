@@ -5,8 +5,8 @@ public class HatchGrabber {
     private DoubleSolenoid hatchGrabber;
     boolean grabbing = false;
 
-    public HatchGrabber(){
-        hatchGrabber = new DoubleSolenoid(0,1); 
+    public HatchGrabber(int pcmIndexOne, int pcmIndexTwo){
+        hatchGrabber = new DoubleSolenoid(pcmIndexOne, pcmIndexTwo); 
     }
 
     public void release() {

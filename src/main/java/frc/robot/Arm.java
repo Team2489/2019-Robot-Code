@@ -12,8 +12,8 @@ public class Arm {
     private double maxAccel = 0.1; // tune this parameter
     private double offset = 0; // tune this parameter like the migos
 
-    private AnalogPotentiometer pot;
-
+    private AnalogPotentiometer pot = new AnalogPotentiometer(0, 270, 0);
+    
     public Arm(int index) {
         motor = new TalonSRX(index);
         pot = new AnalogPotentiometer(0, 270, offset);

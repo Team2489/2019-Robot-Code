@@ -17,24 +17,19 @@ public class Robot extends TimedRobot {
   private DriveControlManager dcm;
   private Drivetrain dtrain;
   private Arm arm;
-
-  private AnalogPotentiometer pot = new AnalogPotentiometer(0, 270, 0);
-
   @Override
   public void robotInit() {
-    
     dcm = new DriveControlManager(); // DCM contains all driver configurations and input
     dtrain = new Drivetrain(11, 12, 9, 10); // initialize drivetrain with given TalonSRX indices
     arm = new Arm(1); // initialize Arm with TalonSRX index
-    hatchGrabber = new HatchGrabber(); // initialize Hatch Grabber
-   
+    hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
 
     CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
 
   public void teleopPeriodic() {
 
-    dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldExit());
+    dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
     arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
 
     if(dcm.shouldGrab()) {
@@ -44,6 +39,10 @@ public class Robot extends TimedRobot {
     }
 
     dcm.updateSquat();
+  }
+
+  public void autonomousPeriodic() {
+
   }
   
 }
