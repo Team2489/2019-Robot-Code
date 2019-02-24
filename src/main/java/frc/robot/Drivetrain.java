@@ -10,6 +10,9 @@ public class Drivetrain {
     private DifferentialDrive ddrive;
     private SpeedControllerGroup left;
     private SpeedControllerGroup right;
+    private double kp = 0.01;
+    
+    public double setpoint = 180.0;
 
     public Drivetrain(int frontLeft, int rearLeft, int frontRight, int rearRight) {
         left = new SpeedControllerGroup(new WPI_TalonSRX(frontLeft), new WPI_TalonSRX(rearLeft));
@@ -25,5 +28,9 @@ public class Drivetrain {
         } else {
             ddrive.tankDrive(-0.6, -0.6);
         }
+    }
+
+    public void turnToAngle(double error) {
+        ddrive.tankDrive(kp * error, -kp * error);
     }
 }
