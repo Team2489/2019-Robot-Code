@@ -18,7 +18,10 @@ public class Robot extends TimedRobot {
   private DriveControlManager dcm;
   private Drivetrain dtrain;
   private Arm arm;
+  private Gyro gyro;
+
   private Timer moveOffHab;
+
   private double howLongShouldWeMove;
   @Override
   public void robotInit() {
@@ -28,6 +31,7 @@ public class Robot extends TimedRobot {
     dtrain = new Drivetrain(11, 12, 9, 10); // initialize drivetrain with given TalonSRX indices
     arm = new Arm(1); // initialize Arm with TalonSRX index
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
+    gyro = new Gyro(); // initialize navX
 
     CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
@@ -44,6 +48,8 @@ public class Robot extends TimedRobot {
     }
 
     dcm.updateSquat();
+
+    SmartDashboard.putNumber("Heading", gyro.getGyroAngle()); // display heading data
   }
 
   public void autonomousInit() {
