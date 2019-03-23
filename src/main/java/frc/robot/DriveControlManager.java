@@ -7,8 +7,8 @@ public class DriveControlManager {
     private Joystick m_rightStick;
     private Joystick xbox;
 
-    private double k = 0.75;
-    private double kArm = 0.7;
+    private double k = 0.8;
+    private double kArm = 0.75;
     private boolean squat = false;
     
     public DriveControlManager() {
@@ -30,11 +30,11 @@ public class DriveControlManager {
     }
 
     public boolean shouldGrab() {
-        return m_rightStick.getRawButton(2);
+        return m_rightStick.getRawButton(2) || m_rightStick.getRawButton(3) || xbox.getRawButton(8);
     }
 
     public boolean shouldRelease() {
-        return m_leftStick.getRawButton(2);
+        return m_leftStick.getRawButton(2) || m_leftStick.getRawButton(3) || xbox.getRawButton(7);
     }
 
     public int shouldEnterOrExit() { // 0 = exit, 1 = enter, -1 = human control
@@ -47,7 +47,7 @@ public class DriveControlManager {
     }
     
     public boolean shouldFreezeArm() {
-        return xbox.getRawButton(8);
+        return false;
     }
 
     public void updateSquat() {
