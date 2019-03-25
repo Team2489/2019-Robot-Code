@@ -7,14 +7,22 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Spark;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import java.util.ArrayList;
+
 public class Drivetrain {
     private DifferentialDrive ddrive;
     private SpeedControllerGroup left;
     private SpeedControllerGroup right;
     private double kp = 0.01;
     
-    private ArduinoI2C aI2C;
     private Spark lightPower;
+    private JeVoisInterface ji;
+
+    private final double visionPower = 0.2;
+    private final double visionTurnOffset = 0.03;
+    private final int visionRobotCenterPosition = 430;
+    private final int visionRobotCenterError = 5;
     
     public double setpoint = 180.0;
 
@@ -22,11 +30,11 @@ public class Drivetrain {
         left = new SpeedControllerGroup(new WPI_TalonSRX(frontLeft), new WPI_TalonSRX(rearLeft));
         right = new SpeedControllerGroup(new WPI_TalonSRX(frontRight), new WPI_TalonSRX(rearRight));
         ddrive = new DifferentialDrive(left, right);
-        
-        aI2C = new ArduinoI2C();
          
         lightPower = new Spark(0); 
         lightPower.set(1.0);
+
+        ji = new JeVoisInterface(true);
     }
 
     public void drive(double leftVelocity, double rightVelocity, int exit_or_enter) {
@@ -43,7 +51,58 @@ public class Drivetrain {
         ddrive.tankDrive(kp * error, -kp * error, false);
     }
 
-    public String getCenter() {
-       return aI2C.read() ;   
+    // targetSelectionHint could be -1 for left target, 0 middle, 1 right
+    // it is just a hint if vision see fewer targets it would just drive
+    // to it
+    public void driveVision(int targetSelectionHint) {
+        VisionTarget vt = null;
+        ArrayList<VisionTarget> targets = ji.getVisionTargets();
+        if (targets != null) {
+            int numTargets = targets.size();
+            // middle target hint
+            if (targetSelectionHint == 0) {
+                if (numTargets == 3) {
+                    // 3 targets; middle hint
+                    vt = targets.get(1);
+                } else if (numTargets == 2) {
+                    // 2 targets; middle hint pick up left one
+                    vt = targets.get(0);
+                } else {
+                    // 1 target
+                    vt = targets.get(0);
+                }
+            } else if (targetSelectionHint == -1) {
+                // in all cases
+                vt = targets.get(0);
+            } else if (targetSelectionHint == 1) {
+                if (numTargets == 3) {
+                    // 3 targets; right hint
+                    vt = targets.get(2);
+                } else if (numTargets == 2) {
+                    vt = targets.get(1);
+                } else {
+                    vt = targets.get(0);
+                }
+            }
+
+            if (vt != null) {
+                int center = vt.x;
+
+                if (center < (visionRobotCenterPosition - visionRobotCenterError)) {
+                    // drive forward, slightly turn right
+                    drive(visionPower - visionTurnOffset, visionPower + visionTurnOffset, -1);
+                } else if (center > (visionRobotCenterPosition + visionRobotCenterError)) {
+                    // drive forward, sligtly turn left
+                    drive(visionPower + visionTurnOffset, visionPower - visionTurnOffset, -1);
+                } else {
+                    // we are right on target, drive forward
+                    drive(visionPower, visionPower, -1);
+                }
+            }
+        } else {
+            // stop no vision targets
+            DriverStation.reportWarning("driveVision: No targets", false);
+            drive(0, 0, -1);
+        }
     }
 }

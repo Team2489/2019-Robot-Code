@@ -8,6 +8,7 @@ package frc.robot;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
@@ -44,7 +45,7 @@ public class JeVoisInterface {
     // high resolution
     private static final int STREAM_WIDTH_PX = 640;
     private static final int STREAM_HEIGHT_PX = 480;
-    private static final int STREAM_RATE_FPS = 30;
+    private static final int STREAM_RATE_FPS = 15;
 
     // low resolution
     // private static final int STREAM_WIDTH_PX = 320;
@@ -57,7 +58,7 @@ public class JeVoisInterface {
     private SerialPort visionPort = null;
     
     // USBCam and server used for broadcasting a webstream of what is seen 
-    // private UsbCamera visionCam = null;
+    private UsbCamera visionCam = null;
     // private MjpegServer camServer = null;
     
     // Status variables 
@@ -318,10 +319,15 @@ public class JeVoisInterface {
             if (debug >= 1) {
                 System.out.print("Starting JeVois Cam Stream...");
             }
+            visionCam = CameraServer.getInstance().startAutomaticCapture("JeVois Camera", 0);
+            // two possible formats PixelFormat.kBGR and PixelFormat.kMJPEG
+            visionCam.setVideoMode(PixelFormat.kMJPEG , STREAM_WIDTH_PX, STREAM_HEIGHT_PX, STREAM_RATE_FPS);
+
             // visionCam = new UsbCamera("VisionProcCam", 0);
             // visionCam.setVideoMode(PixelFormat.kBGR , STREAM_WIDTH_PX, STREAM_HEIGHT_PX, STREAM_RATE_FPS);
             // camServer = new MjpegServer("VisionCamServer", MJPG_STREAM_PORT);
             // camServer.setSource(visionCam);
+
             camStreamRunning = true;
             dataStreamRunning = true;
             if (debug >= 1) {
@@ -339,7 +345,7 @@ public class JeVoisInterface {
     private void stopCameraStream(){
         if(camStreamRunning){
             // camServer.free();
-            // visionCam.free();
+            visionCam.free();
             camStreamRunning = false;
             dataStreamRunning = false;
         }
@@ -581,7 +587,9 @@ public class JeVoisInterface {
         }
 
         if (retval == 0) {
-            visionTargets = currentVisionTargets;
+            synchronized(this) {
+                visionTargets = currentVisionTargets;
+            }
         } else {
           if (debug >= 10) {
               System.out.println("parsePacket: got error: " + retval);
@@ -592,18 +600,18 @@ public class JeVoisInterface {
         return retval;        
     }
 
-    public ArrayList<VisionTarget> getVisionTargets() {
+    public synchronized ArrayList<VisionTarget> getVisionTargets() {
         return visionTargets;
     }
 
     private void driverStationReportError(String error, boolean printTrace) {
-        // DriverStation.reportError(error, printTrace);
-        System.out.println("DriverStation ERROR:" + error);
+        DriverStation.reportError(error, printTrace);
+        // System.out.println("DriverStation ERROR:" + error);
     }
 
     private void driverStationReportWarning(java.lang.String error, boolean printTrace) {
-        // DriverStation.reportWarnining(error, printTrace);
-        System.out.println("DriverStation WARNING:" + error);
+        DriverStation.reportWarning(error, printTrace);
+        // System.out.println("DriverStation WARNING:" + error);
     }
 
     private double timerGetFPGATimestamp() {

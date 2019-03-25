@@ -32,17 +32,25 @@ public class Robot extends TimedRobot {
     howLongShouldWeMove = 3.0;
     moveOffHab = new Timer();
     dcm = new DriveControlManager(); // DCM contains all driver configurations and input
-    dtrain = new Drivetrain(12, 11, 10, 9); // initialize drivetrain with given TalonSRX indices
+    // competion robot
+    // dtrain = new Drivetrain(12, 11, 10, 9); // initialize drivetrain with given TalonSRX indices
+    // tester robot 2222
+    dtrain = new Drivetrain(7, 6, 2, 9);
     arm = new Arm(1); // initialize Arm with TalonSRX index
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
 
-    front = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
-    back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
+    front = CameraServer.getInstance().startAutomaticCapture(1); // give dashboard camera feed
+    // back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
 
   public void teleopPeriodic() {
-
-    dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
+    if (dcm.shouldVisionDrive()) {
+      // drive based on JeVois info
+      dtrain.driveVision(dcm.getVisionHint());
+    } else {
+      // drive on Joysticks
+      dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
+    }
     // arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
     arm.pidActuate(-11);
     if(dcm.shouldGrab()) {

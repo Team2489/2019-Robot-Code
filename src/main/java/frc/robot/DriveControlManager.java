@@ -59,4 +59,20 @@ public class DriveControlManager {
             k = 0.75;
         }
     }
+
+    public boolean shouldVisionDrive() {
+        boolean ret = false;
+        if(m_rightStick.getRawButton(7) || m_rightStick.getRawButton(8)) {
+            ret = true;
+        }
+        return ret;
+    }
+
+    public int getVisionHint() {
+        int ret = 0;
+        if (m_rightStick.getRawButton(8)) {
+            ret = -1;
+        }
+        return ret;
+    }
 }
