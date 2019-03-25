@@ -21,8 +21,8 @@ public class Drivetrain {
 
     private final double visionPower = 0.2;
     private final double visionTurnOffset = 0.03;
-    private final int visionRobotCenterPosition = 430;
-    private final int visionRobotCenterError = 5;
+    private final int visionRobotCenterPosition = 215 * JeVoisInterface.VIDEO_SCALE;
+    private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     
     public double setpoint = 180.0;
 

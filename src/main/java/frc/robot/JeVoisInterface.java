@@ -43,15 +43,17 @@ public class JeVoisInterface {
     
     // When streaming, use this set of configuration
     // high resolution
-    private static final int STREAM_WIDTH_PX = 640;
-    private static final int STREAM_HEIGHT_PX = 480;
-    private static final int STREAM_RATE_FPS = 15;
-
-    // low resolution
-    // private static final int STREAM_WIDTH_PX = 320;
-    // private static final int STREAM_HEIGHT_PX = 240;
+    // private static final int STREAM_WIDTH_PX = 640;
+    // private static final int STREAM_HEIGHT_PX = 480;
     // private static final int STREAM_RATE_FPS = 15;
+
+    // low resolution used as base VIDEO_SCALE=1
+    private static final int STREAM_WIDTH_PX = 320;
+    private static final int STREAM_HEIGHT_PX = 240;
+    private static final int STREAM_RATE_FPS = 15;
     
+    public static final int VIDEO_SCALE = 2;
+
     private static final int THREAD_SLEEP_INTERVAL = 20; //ms
     
     // Serial port used for getting target data from JeVois 
@@ -321,7 +323,10 @@ public class JeVoisInterface {
             }
             visionCam = CameraServer.getInstance().startAutomaticCapture("JeVois Camera", 0);
             // two possible formats PixelFormat.kBGR and PixelFormat.kMJPEG
-            visionCam.setVideoMode(PixelFormat.kMJPEG , STREAM_WIDTH_PX, STREAM_HEIGHT_PX, STREAM_RATE_FPS);
+            visionCam.setVideoMode(PixelFormat.kMJPEG ,
+                                   STREAM_WIDTH_PX * VIDEO_SCALE,
+                                   STREAM_HEIGHT_PX * VIDEO_SCALE,
+                                   STREAM_RATE_FPS);
 
             // visionCam = new UsbCamera("VisionProcCam", 0);
             // visionCam.setVideoMode(PixelFormat.kBGR , STREAM_WIDTH_PX, STREAM_HEIGHT_PX, STREAM_RATE_FPS);
