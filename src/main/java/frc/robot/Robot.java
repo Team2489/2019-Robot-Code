@@ -27,6 +27,11 @@ public class Robot extends TimedRobot {
   private UsbCamera front, back;
 
   private double howLongShouldWeMove;
+
+  private VideoTilt vtilt;
+  private Sonar sonar;
+
+
   @Override
   public void robotInit() {
     howLongShouldWeMove = 3.0;
@@ -39,14 +44,17 @@ public class Robot extends TimedRobot {
     arm = new Arm(1); // initialize Arm with TalonSRX index
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
 
-    front = CameraServer.getInstance().startAutomaticCapture(1); // give dashboard camera feed
+    vtilt = new VideoTilt(1);
+    sonar = new Sonar(1);
+
+    // front = CameraServer.getInstance().startAutomaticCapture(1); // give dashboard camera feed
     // back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
 
   public void teleopPeriodic() {
     if (dcm.shouldVisionDrive()) {
       // drive based on JeVois info
-      dtrain.driveVision(dcm.getVisionHint());
+      dtrain.driveVision(dcm.getVisionHint(), null, null);
     } else {
       // drive on Joysticks
       dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import java.util.ArrayList;
 
 public class Drivetrain {
+
     private DifferentialDrive ddrive;
     private SpeedControllerGroup left;
     private SpeedControllerGroup right;
@@ -23,7 +24,11 @@ public class Drivetrain {
     private final double visionTurnOffset = 0.03;
     private final int visionRobotCenterPosition = 215 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
-    
+    private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
+    private final int visionRobotHorizontalCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
+    private final double sonarStopDistnace = 20.0; // in inches
+
+
     public double setpoint = 180.0;
 
     public Drivetrain(int frontLeft, int rearLeft, int frontRight, int rearRight) {
@@ -54,7 +59,7 @@ public class Drivetrain {
     // targetSelectionHint could be -1 for left target, 0 middle, 1 right
     // it is just a hint if vision see fewer targets it would just drive
     // to it
-    public void driveVision(int targetSelectionHint) {
+    public void driveVision(int targetSelectionHint, VideoTilt vtilt, Sonar sonar) {
         VisionTarget vt = null;
         ArrayList<VisionTarget> targets = ji.getVisionTargets();
         if (targets != null) {
@@ -87,16 +92,36 @@ public class Drivetrain {
 
             if (vt != null) {
                 int center = vt.x;
+                boolean stopDistance = false;
+                if (sonar != null) {
+                    double distance = sonar.getDistance();
+                    if (distance < sonarStopDistnace) {
+                        stopDistance = true;
+                    }
+                }
 
-                if (center < (visionRobotCenterPosition - visionRobotCenterError)) {
-                    // drive forward, slightly turn right
-                    drive(visionPower - visionTurnOffset, visionPower + visionTurnOffset, -1);
-                } else if (center > (visionRobotCenterPosition + visionRobotCenterError)) {
-                    // drive forward, sligtly turn left
-                    drive(visionPower + visionTurnOffset, visionPower - visionTurnOffset, -1);
+                if (!stopDistance) {
+                   if (center < (visionRobotCenterPosition - visionRobotCenterError)) {
+                        // drive forward, slightly turn right
+                        drive(visionPower - visionTurnOffset, visionPower + visionTurnOffset, -1);
+                    } else if (center > (visionRobotCenterPosition + visionRobotCenterError)) {
+                        // drive forward, sligtly turn left
+                        drive(visionPower + visionTurnOffset, visionPower - visionTurnOffset, -1);
+                    } else {
+                        // we are right on target, drive forward
+                        drive(visionPower, visionPower, -1);
+                    }
+                    if (vtilt != null) {
+                        int vcenter = vt.y;
+                        if (vcenter < visionRobotHorizontalCenter - visionRobotHorizontalCenterError) {
+                            vtilt.down();
+                        } else if (vcenter > visionRobotHorizontalCenter + visionRobotHorizontalCenterError) {
+                            vtilt.up();
+                        }
+                    }
                 } else {
-                    // we are right on target, drive forward
-                    drive(visionPower, visionPower, -1);
+                    // stop we are too close
+                    drive(0, 0, -1);
                 }
             }
         } else {
