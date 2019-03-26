@@ -62,7 +62,7 @@ public class DriveControlManager {
 
     public boolean shouldVisionDrive() {
         boolean ret = false;
-        if(m_rightStick.getRawButton(7) || m_rightStick.getRawButton(8)) {
+        if(m_rightStick.getRawButton(4) || m_leftStick.getRawButton(5)) {
             ret = true;
         }
         return ret;
@@ -70,9 +70,37 @@ public class DriveControlManager {
 
     public int getVisionHint() {
         int ret = 0;
-        if (m_rightStick.getRawButton(8)) {
+        if (m_rightStick.getRawButton(4)) {
+            ret = 1;
+        } else if(m_leftStick.getRawButton(5)) {
             ret = -1;
         }
+        return ret;
+    }
+
+    public boolean shouldVtiltUp() {
+        boolean ret = false;
+        if (m_rightStick.getRawButton(9)) {
+            ret = true;
+        } 
+        // System.out.println("shouldVtilitUp() = " + ret);
+        return ret;
+    }
+
+    public boolean shouldVtiltDown() {
+        boolean ret = false;
+        if (m_rightStick.getRawButton(10)) {
+            ret = true;
+        } 
+        // System.out.println("shouldVtiltDown() = " + ret);
+        return ret;
+    }
+
+    public boolean shouldVtiltHorizontal() {
+        boolean ret = false;
+        if (m_leftStick.getRawButton(10)) {
+            ret = true;
+        } 
         return ret;
     }
 }

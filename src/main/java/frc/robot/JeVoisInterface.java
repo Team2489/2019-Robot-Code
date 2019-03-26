@@ -33,7 +33,7 @@ public class JeVoisInterface {
 
     private static final int TARGET_FIELDS_NUM = 5;
 
-    private static final int debug = 10;
+    private static final int debug = 0;
     
     // Confgure the camera to stream debug images or not.
     private boolean broadcastUSBCam = false;

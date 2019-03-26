@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
     arm = new Arm(1); // initialize Arm with TalonSRX index
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
 
-    vtilt = new VideoTilt(1);
+    vtilt = new VideoTilt(2);
     sonar = new Sonar(1);
 
     // front = CameraServer.getInstance().startAutomaticCapture(1); // give dashboard camera feed
@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     if (dcm.shouldVisionDrive()) {
       // drive based on JeVois info
-      dtrain.driveVision(dcm.getVisionHint(), null, null);
+      dtrain.driveVision(dcm.getVisionHint(), vtilt, null);
     } else {
       // drive on Joysticks
       dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
@@ -65,6 +65,21 @@ public class Robot extends TimedRobot {
       hatchGrabber.grab();
     } else if(dcm.shouldRelease()) {
       hatchGrabber.release();
+    }
+
+    vtilt.hold();
+
+    if (dcm.shouldVtiltHorizontal()) {
+      vtilt.setHorizontal();
+    }
+    if (dcm.shouldVtiltUp()) {
+      // System.out.println("dmc.shouldVtiltUp");
+      vtilt.up();
+    }
+
+    if ( dcm.shouldVtiltDown()) {
+      // System.out.println("dcm.shouldVtiltDown");
+      vtilt.down();
     }
 
     double sp = 50.0;

@@ -6,7 +6,7 @@ public class VideoTilt {
     private static final double ANGLE_HORIZONTAL = 120;
     private static final double ANGLE_MAX = 170;
     private static final double ANGLE_MIN = 90;
-    private static final double ANGLE_INCREMENT = 3.0;
+    private static final double ANGLE_INCREMENT = 0.1;
 
     private Servo servo;
     private double angle;
@@ -14,6 +14,10 @@ public class VideoTilt {
     public VideoTilt(int pwm) {
         servo = new Servo(pwm);
         setHorizontal();
+    }
+
+    public void hold() {
+        servo.setAngle(angle);
     }
 
     public void setHorizontal() {
@@ -27,6 +31,7 @@ public class VideoTilt {
         if (angle < ANGLE_MIN) {
             angle = ANGLE_MIN;
         }
+        // System.out.println("up " + angle);
         servo.setAngle(angle);
     }
 
@@ -36,5 +41,7 @@ public class VideoTilt {
         if (angle > ANGLE_MAX) {
             angle = ANGLE_MAX;
         }
+        // System.out.println("down " + angle);
+        servo.setAngle(angle);
     }
 }

@@ -22,7 +22,7 @@ public class Drivetrain {
 
     private final double visionPower = 0.2;
     private final double visionTurnOffset = 0.03;
-    private final int visionRobotCenterPosition = 215 * JeVoisInterface.VIDEO_SCALE;
+    private final int visionRobotCenterPosition = 192 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
@@ -113,9 +113,9 @@ public class Drivetrain {
                     }
                     if (vtilt != null) {
                         int vcenter = vt.y;
-                        if (vcenter < visionRobotHorizontalCenter - visionRobotHorizontalCenterError) {
+                        if (vcenter > visionRobotHorizontalCenter + visionRobotHorizontalCenterError) {
                             vtilt.down();
-                        } else if (vcenter > visionRobotHorizontalCenter + visionRobotHorizontalCenterError) {
+                        } else if (vcenter < visionRobotHorizontalCenter - visionRobotHorizontalCenterError) {
                             vtilt.up();
                         }
                     }
