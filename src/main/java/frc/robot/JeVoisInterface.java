@@ -54,7 +54,7 @@ public class JeVoisInterface {
     
     public static final int VIDEO_SCALE = 2;
 
-    private static final int THREAD_SLEEP_INTERVAL = 20; //ms
+    private static final int THREAD_SLEEP_INTERVAL = 50; //ms
     
     // Serial port used for getting target data from JeVois 
     private SerialPort visionPort = null;
@@ -321,7 +321,7 @@ public class JeVoisInterface {
             if (debug >= 1) {
                 System.out.print("Starting JeVois Cam Stream...");
             }
-            visionCam = CameraServer.getInstance().startAutomaticCapture("JeVois Camera", 0);
+            visionCam = CameraServer.getInstance().startAutomaticCapture("JeVois Camera", 1);
             // two possible formats PixelFormat.kBGR and PixelFormat.kMJPEG
             visionCam.setVideoMode(PixelFormat.kMJPEG ,
                                    STREAM_WIDTH_PX * VIDEO_SCALE,

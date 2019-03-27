@@ -25,7 +25,7 @@ public class Drivetrain {
     private final int visionRobotCenterPosition = 192 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
-    private final int visionRobotHorizontalCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
+    private final int visionRobotHorizontalCenterError = 10 * JeVoisInterface.VIDEO_SCALE;
     private final double sonarStopDistnace = 20.0; // in inches
 
 

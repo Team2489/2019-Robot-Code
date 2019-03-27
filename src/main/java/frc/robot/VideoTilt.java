@@ -6,7 +6,7 @@ public class VideoTilt {
     private static final double ANGLE_HORIZONTAL = 120;
     private static final double ANGLE_MAX = 170;
     private static final double ANGLE_MIN = 90;
-    private static final double ANGLE_INCREMENT = 0.1;
+    private static final double ANGLE_INCREMENT = 0.3;
 
     private Servo servo;
     private double angle;

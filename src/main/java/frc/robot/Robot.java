@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.cscore.VideoMode.PixelFormat;
 
 import edu.wpi.cscore.*;
 
@@ -47,7 +48,9 @@ public class Robot extends TimedRobot {
     vtilt = new VideoTilt(2);
     sonar = new Sonar(1);
 
-    // front = CameraServer.getInstance().startAutomaticCapture(1); // give dashboard camera feed
+    front = CameraServer.getInstance().startAutomaticCapture("Microsoft Camera", 0); // give dashboard camera feed
+    front.setVideoMode(PixelFormat.kMJPEG, 640, 320, 15);
+
     // back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
 
