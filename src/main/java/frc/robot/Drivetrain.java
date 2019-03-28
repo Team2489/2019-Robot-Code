@@ -26,7 +26,7 @@ public class Drivetrain {
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenterError = 10 * JeVoisInterface.VIDEO_SCALE;
-    private final double sonarStopDistnace = 20.0; // in inches
+    private final double sonarStopDistnace = 40.0; // in inches
 
 
     public double setpoint = 180.0;
@@ -95,18 +95,27 @@ public class Drivetrain {
                 boolean stopDistance = false;
                 if (sonar != null) {
                     double distance = sonar.getDistance();
+                    // System.out.println("distance = " + distance);
                     if (distance < sonarStopDistnace) {
                         stopDistance = true;
                     }
                 }
 
                 if (!stopDistance) {
-                   if (center < (visionRobotCenterPosition - visionRobotCenterError)) {
+                    if (center < (visionRobotCenterPosition - visionRobotCenterError)) {
                         // drive forward, slightly turn right
-                        drive(visionPower - visionTurnOffset, visionPower + visionTurnOffset, -1);
+                        double offset = visionTurnOffset;
+                        // double error = visionRobotCenterPosition - center;
+                        // double offset = visionTurnOffset + 
+                        // visionTurnOffset * (error / (JeVoisInterface.STREAM_WIDTH_PX * JeVoisInterface.VIDEO_SCALE) / 2);
+                        drive(visionPower - offset, visionPower + offset, -1);
                     } else if (center > (visionRobotCenterPosition + visionRobotCenterError)) {
                         // drive forward, sligtly turn left
-                        drive(visionPower + visionTurnOffset, visionPower - visionTurnOffset, -1);
+                        double offset = visionTurnOffset;
+                        // double error = center - visionRobotCenterPosition;
+                        // double offset = visionTurnOffset + 
+                        // visionTurnOffset * (error / (JeVoisInterface.STREAM_WIDTH_PX * JeVoisInterface.VIDEO_SCALE) / 2);
+                        drive(visionPower + offset, visionPower - offset, -1);
                     } else {
                         // we are right on target, drive forward
                         drive(visionPower, visionPower, -1);

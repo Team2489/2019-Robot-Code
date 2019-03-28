@@ -43,14 +43,14 @@ public class JeVoisInterface {
     
     // When streaming, use this set of configuration
     // high resolution
-    // private static final int STREAM_WIDTH_PX = 640;
-    // private static final int STREAM_HEIGHT_PX = 480;
-    // private static final int STREAM_RATE_FPS = 15;
+    // public static final int STREAM_WIDTH_PX = 640;
+    // public static final int STREAM_HEIGHT_PX = 480;
+    // public static final int STREAM_RATE_FPS = 15;
 
     // low resolution used as base VIDEO_SCALE=1
-    private static final int STREAM_WIDTH_PX = 320;
-    private static final int STREAM_HEIGHT_PX = 240;
-    private static final int STREAM_RATE_FPS = 15;
+    public static final int STREAM_WIDTH_PX = 320;
+    public static final int STREAM_HEIGHT_PX = 240;
+    public static final int STREAM_RATE_FPS = 15;
     
     public static final int VIDEO_SCALE = 2;
 
