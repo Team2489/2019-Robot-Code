@@ -35,7 +35,7 @@ public class Arm {
         double deriv = (err - prev_err) / 0.02;
         integral += err * 0.02;
         double controlParamter = kP * err + kI * integral + kD * deriv + kF * Math.cos(setpoint * Math.PI / 180.0);
-        System.out.println(controlParamter);
+        // System.out.println(controlParamter);
         motor.set(ControlMode.PercentOutput, controlParamter);
 
     }
