@@ -11,5 +11,5 @@ Class Structure:
 
 
 Need to Add:
-1. Potentiometer and PID for Arm angle sensing and control (Potentiometer code added)
+1. Potentiometer and PID for Arm angle sensing and control (Added at CVR)
 2. Vision Code for drive base alignment with target (Drive Base Alignment code added)
