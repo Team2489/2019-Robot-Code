@@ -10,7 +10,7 @@ public class DriveControlManager {
     private double k = 0.8;
     private double kArm = 0.75;
     private boolean squat = false;
-    
+
     public DriveControlManager() {
         m_leftStick = new Joystick(0);
         m_rightStick = new Joystick(1);
@@ -101,6 +101,22 @@ public class DriveControlManager {
         if (m_leftStick.getRawButton(10)) {
             ret = true;
         } 
+        return ret;
+    }
+
+    public boolean shouldJevoisVisionMode() {
+        boolean ret = false;
+        if (m_rightStick.getRawButton(6)) {
+            ret = true;
+        }
+        return ret;
+    }
+
+    public boolean shouldJevoisHumanMode() {
+        boolean ret = false;
+        if (m_rightStick.getRawButton(7)) {
+            ret = true;
+        }
         return ret;
     }
 }

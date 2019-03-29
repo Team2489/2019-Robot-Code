@@ -81,6 +81,10 @@ public class JeVoisInterface {
     
     private ArrayList<VisionTarget> visionTargets = null;
 
+    private boolean currentIsVisionMode = true;
+    private boolean humanModeRequested = false;
+    private boolean visionModeRequested = false;
+
     //=======================================================
     //== BEGIN PUBLIC INTERFACE
     //=======================================================
@@ -175,10 +179,14 @@ public class JeVoisInterface {
     public void setCamVisionProcMode() {
         if (visionPort != null){
             sendCmdAndCheck("setcam autoexp 1"); //Disable auto exposure
-            sendCmdAndCheck("setcam absexp 130"); //Force exposure to a low value for vision processing
+            sendCmdAndCheck("setcam absexp 100"); //Force exposure to a low value for vision processing
         }
     }
     
+    public synchronized void setCamVisionProcModeAsync() {
+        visionModeRequested = true;
+    }
+
     /**
      * Send parameters to the camera to configure it for a human-readable image
      */
@@ -186,6 +194,10 @@ public class JeVoisInterface {
         if (visionPort != null){
             sendCmdAndCheck("setcam autoexp 0"); //Enable AutoExposure
         }
+    }
+
+    public synchronized void setCamHumanDriverModeAsync() {
+        humanModeRequested = true;
     }
 
     /*
@@ -630,9 +642,43 @@ public class JeVoisInterface {
     Thread packetListenerThread = new Thread(new Runnable(){
         public void run(){
         	while(!Thread.interrupted()){
-        		backgroundUpdate();
-                        // sleep for 5ms, i.e update with 20 fps
-                        sleep(THREAD_SLEEP_INTERVAL);
+                boolean doVisionMode = true;
+                boolean doSwitchToVision = false;
+                boolean doSwitchToHuman = false;
+
+                synchronized(this) {
+                    if (humanModeRequested) {
+                        if (currentIsVisionMode) {
+                            doSwitchToHuman = true;
+                            currentIsVisionMode = false;
+                        }
+                    }
+                    if (visionModeRequested) {
+                        if (!currentIsVisionMode) {
+                            doSwitchToVision = true;
+                            currentIsVisionMode = true;
+                        }
+                    }
+                    humanModeRequested = false;
+                    visionModeRequested = false;
+
+                    doVisionMode = currentIsVisionMode;
+                }
+
+                if (doSwitchToHuman) {
+                    setCamHumanDriverMode();
+                }
+                if (doSwitchToVision) {
+                    setCamVisionProcMode();
+                }
+                if (doVisionMode) {
+        		    backgroundUpdate();
+                    // sleep for 20ms, i.e update with 50 fps
+                    sleep(THREAD_SLEEP_INTERVAL);
+                } else {
+                    // Human Output on Camera check if status changes
+                    sleep(THREAD_SLEEP_INTERVAL * 5);
+                }
         	}
         }
     });

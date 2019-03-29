@@ -85,6 +85,14 @@ public class Robot extends TimedRobot {
       vtilt.down();
     }
 
+    if (dcm.shouldJevoisHumanMode()) {
+      dtrain.ji.setCamHumanDriverModeAsync();
+    }
+
+    if (dcm.shouldJevoisVisionMode()) {
+      dtrain.ji.setCamVisionProcModeAsync();
+    }
+
     double sp = 50.0;
 
     SmartDashboard.putNumber("angle", arm.getAngle());
