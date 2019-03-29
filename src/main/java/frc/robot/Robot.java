@@ -123,6 +123,8 @@ public class Robot extends TimedRobot {
       hatchGrabber.release();
     }
 
+    vtilt.hold();
+
     // ringLight.set(dcm.getArmVelocity());
 
     dcm.updateSquat();
