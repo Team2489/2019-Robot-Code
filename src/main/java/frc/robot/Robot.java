@@ -39,9 +39,9 @@ public class Robot extends TimedRobot {
     moveOffHab = new Timer();
     dcm = new DriveControlManager(); // DCM contains all driver configurations and input
     // competion robot
-    // dtrain = new Drivetrain(12, 11, 10, 9); // initialize drivetrain with given TalonSRX indices
+    dtrain = new Drivetrain(12, 11, 10, 9); // initialize drivetrain with given TalonSRX indices
     // tester robot 2222
-    dtrain = new Drivetrain(7, 6, 2, 9);
+    // dtrain = new Drivetrain(7, 6, 2, 9);
     arm = new Arm(1); // initialize Arm with TalonSRX index
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
 
