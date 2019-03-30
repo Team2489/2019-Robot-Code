@@ -642,45 +642,51 @@ public class JeVoisInterface {
      */
     Thread packetListenerThread = new Thread(new Runnable(){
         public void run(){
-        	while(!Thread.interrupted()){
-                boolean doVisionMode = true;
-                boolean doSwitchToVision = false;
-                boolean doSwitchToHuman = false;
+            try {
+                while(!Thread.interrupted()){
+                    boolean doVisionMode = true;
+                    boolean doSwitchToVision = false;
+                    boolean doSwitchToHuman = false;
 
+                    synchronized(this) {
+                        if (humanModeRequested) {
+                            if (currentIsVisionMode) {
+                                doSwitchToHuman = true;
+                                currentIsVisionMode = false;
+                            }
+                        }
+                        if (visionModeRequested) {
+                            if (!currentIsVisionMode) {
+                                doSwitchToVision = true;
+                                currentIsVisionMode = true;
+                            }
+                        }
+                        humanModeRequested = false;
+                        visionModeRequested = false;
+
+                        doVisionMode = currentIsVisionMode;
+                    }
+
+                    if (doSwitchToHuman) {
+                        setCamHumanDriverMode();
+                    }
+                    if (doSwitchToVision) {
+                        setCamVisionProcMode();
+                    }
+                    if (doVisionMode) {
+        		        backgroundUpdate();
+                        // sleep for 20ms, i.e update with 50 fps
+                        sleep(THREAD_SLEEP_INTERVAL);
+                    } else {
+                        // Human Output on Camera check if status changes
+                        sleep(THREAD_SLEEP_INTERVAL * 5);
+                    }
+                }
+            } catch (Exception ex) {
                 synchronized(this) {
-                    if (humanModeRequested) {
-                        if (currentIsVisionMode) {
-                            doSwitchToHuman = true;
-                            currentIsVisionMode = false;
-                        }
-                    }
-                    if (visionModeRequested) {
-                        if (!currentIsVisionMode) {
-                            doSwitchToVision = true;
-                            currentIsVisionMode = true;
-                        }
-                    }
-                    humanModeRequested = false;
-                    visionModeRequested = false;
-
-                    doVisionMode = currentIsVisionMode;
+                    visionTargets = null;
                 }
-
-                if (doSwitchToHuman) {
-                    setCamHumanDriverMode();
-                }
-                if (doSwitchToVision) {
-                    setCamVisionProcMode();
-                }
-                if (doVisionMode) {
-        		    backgroundUpdate();
-                    // sleep for 20ms, i.e update with 50 fps
-                    sleep(THREAD_SLEEP_INTERVAL);
-                } else {
-                    // Human Output on Camera check if status changes
-                    sleep(THREAD_SLEEP_INTERVAL * 5);
-                }
-        	}
+            }
         }
     });
 }

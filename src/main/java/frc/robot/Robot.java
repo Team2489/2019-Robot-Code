@@ -46,7 +46,8 @@ public class Robot extends TimedRobot {
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
 
     vtilt = new VideoTilt(2);
-    sonar = new Sonar(1);
+    // sonar = new Sonar(1);
+    sonar = null;
 
     front = CameraServer.getInstance().startAutomaticCapture(0);
     // front = CameraServer.getInstance().startAutomaticCapture("Microsoft Camera", 0); // give dashboard camera feed
@@ -87,11 +88,15 @@ public class Robot extends TimedRobot {
     }
 
     if (dcm.shouldJevoisHumanMode()) {
-      dtrain.ji.setCamHumanDriverModeAsync();
+      if (dtrain.ji != null) {
+        dtrain.ji.setCamHumanDriverModeAsync();
+      }
     }
 
     if (dcm.shouldJevoisVisionMode()) {
-      dtrain.ji.setCamVisionProcModeAsync();
+      if (dtrain.ji != null) {
+        dtrain.ji.setCamVisionProcModeAsync();
+      }
     }
 
     double sp = 50.0;

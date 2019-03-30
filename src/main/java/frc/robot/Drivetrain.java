@@ -39,7 +39,11 @@ public class Drivetrain {
         lightPower = new Spark(0); 
         lightPower.set(1.0);
 
-        ji = new JeVoisInterface();
+        try {
+            ji = new JeVoisInterface();
+        } catch (Exception ex) {
+            ji = null;
+        }
     }
 
     public void drive(double leftVelocity, double rightVelocity, int exit_or_enter) {
@@ -61,7 +65,10 @@ public class Drivetrain {
     // to it
     public void driveVision(int targetSelectionHint, VideoTilt vtilt, Sonar sonar) {
         VisionTarget vt = null;
-        ArrayList<VisionTarget> targets = ji.getVisionTargets();
+        ArrayList<VisionTarget> targets = null;
+        if (ji != null) {
+            targets = ji.getVisionTargets();
+        }
         if (targets != null) {
             int numTargets = targets.size();
             // middle target hint
