@@ -179,7 +179,7 @@ public class JeVoisInterface {
     public void setCamVisionProcMode() {
         if (visionPort != null){
             sendCmdAndCheck("setcam autoexp 1"); //Disable auto exposure
-            sendCmdAndCheck("setcam absexp 100"); //Force exposure to a low value for vision processing
+            sendCmdAndCheck("setcam absexp 25"); //Force exposure to a low value for vision processing
         }
     }
     
@@ -333,7 +333,8 @@ public class JeVoisInterface {
             if (debug >= 1) {
                 System.out.print("Starting JeVois Cam Stream...");
             }
-            visionCam = CameraServer.getInstance().startAutomaticCapture("JeVois Camera", 1);
+            // visionCam = CameraServer.getInstance().startAutomaticCapture("JeVois Camera", 1);
+            visionCam = CameraServer.getInstance().startAutomaticCapture(1);
             // two possible formats PixelFormat.kBGR and PixelFormat.kMJPEG
             visionCam.setVideoMode(PixelFormat.kMJPEG ,
                                    STREAM_WIDTH_PX * VIDEO_SCALE,

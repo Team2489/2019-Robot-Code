@@ -22,7 +22,7 @@ public class Drivetrain {
 
     private final double visionPower = 0.2;
     private final double visionTurnOffset = 0.03;
-    private final int visionRobotCenterPosition = 192 * JeVoisInterface.VIDEO_SCALE;
+    private final int visionRobotCenterPosition = 218 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenterError = 10 * JeVoisInterface.VIDEO_SCALE;
@@ -39,7 +39,7 @@ public class Drivetrain {
         lightPower = new Spark(0); 
         lightPower.set(1.0);
 
-        ji = new JeVoisInterface(true);
+        ji = new JeVoisInterface();
     }
 
     public void drive(double leftVelocity, double rightVelocity, int exit_or_enter) {

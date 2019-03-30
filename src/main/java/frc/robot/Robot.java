@@ -48,7 +48,8 @@ public class Robot extends TimedRobot {
     vtilt = new VideoTilt(2);
     sonar = new Sonar(1);
 
-    front = CameraServer.getInstance().startAutomaticCapture("Microsoft Camera", 0); // give dashboard camera feed
+    front = CameraServer.getInstance().startAutomaticCapture(0);
+    // front = CameraServer.getInstance().startAutomaticCapture("Microsoft Camera", 0); // give dashboard camera feed
     front.setVideoMode(PixelFormat.kMJPEG, 640, 320, 15);
 
     // back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
@@ -62,8 +63,8 @@ public class Robot extends TimedRobot {
       // drive on Joysticks
       dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
     }
-    // arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
-    arm.pidActuate(-11);
+    arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
+    //arm.pidActuate(-11);
     if(dcm.shouldGrab()) {
       hatchGrabber.grab();
     } else if(dcm.shouldRelease()) {
@@ -114,7 +115,12 @@ public class Robot extends TimedRobot {
   }
 
   public void autonomousPeriodic() {
-    dtrain.drive(dcm.getLeftVelocity() * 0.5, dcm.getRightVelocity() * 0.5, dcm.shouldEnterOrExit());
+    //if (dcm.shouldVisionDrive()) {
+      // drive based on JeVois info
+      // dtrain.driveVision(dcm.getVisionHint(), vtilt, null);
+    //} else {
+      dtrain.drive(dcm.getLeftVelocity() * 0.5, dcm.getRightVelocity() * 0.5, dcm.shouldEnterOrExit());
+    //}
     arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
 
     if(dcm.shouldGrab()) {
