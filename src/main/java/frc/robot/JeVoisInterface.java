@@ -604,16 +604,19 @@ public class JeVoisInterface {
             }
         }
 
-        if (retval == 0) {
-            synchronized(this) {
+        synchronized(this) {
+            if (retval == 0) {
                 visionTargets = currentVisionTargets;
+            } else {
+                visionTargets = null;
             }
-        } else {
+        }
+
+        if (retval != 0) {
           if (debug >= 10) {
               System.out.println("parsePacket: got error: " + retval);
           }
         }
-          
         
         return retval;        
     }

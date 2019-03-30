@@ -52,6 +52,7 @@ public class Robot extends TimedRobot {
     front = CameraServer.getInstance().startAutomaticCapture(0);
     // front = CameraServer.getInstance().startAutomaticCapture("Microsoft Camera", 0); // give dashboard camera feed
     front.setVideoMode(PixelFormat.kMJPEG, 640, 320, 15);
+    //front.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
 
     // back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
@@ -65,6 +66,13 @@ public class Robot extends TimedRobot {
       dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
     }
     arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
+    if(dcm.shouldTurnLeft()) {
+      dtrain.drive(-0.2 / dcm.k, 0.2 / dcm.k,  dcm.shouldEnterOrExit());
+    }
+
+    if(dcm.shouldTurnRight()) {
+      dtrain.drive(0.2 / dcm.k, -0.2 / dcm.k,  dcm.shouldEnterOrExit());
+    }
     //arm.pidActuate(-11);
     if(dcm.shouldGrab()) {
       hatchGrabber.grab();
@@ -116,7 +124,7 @@ public class Robot extends TimedRobot {
 
   public void autonomousInit() {
     moveOffHab.start();
-    hatchGrabber.grab();
+    hatchGrabber.release();
   }
 
   public void autonomousPeriodic() {
@@ -127,6 +135,14 @@ public class Robot extends TimedRobot {
       dtrain.drive(dcm.getLeftVelocity() * 0.5, dcm.getRightVelocity() * 0.5, dcm.shouldEnterOrExit());
     //}
     arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
+
+    if(dcm.shouldTurnLeft()) {
+      dtrain.drive(-0.15 / dcm.k, 0.15 / dcm.k,  dcm.shouldEnterOrExit());
+    }
+
+    if(dcm.shouldTurnRight()) {
+      dtrain.drive(0.15 / dcm.k, -0.15 / dcm.k,  dcm.shouldEnterOrExit());
+    }
 
     if(dcm.shouldGrab()) {
       hatchGrabber.grab();

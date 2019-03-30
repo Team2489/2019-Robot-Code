@@ -7,7 +7,7 @@ public class DriveControlManager {
     private Joystick m_rightStick;
     private Joystick xbox;
 
-    private double k = 0.8;
+    public double k = 0.8;
     private double kArm = 0.75;
     private boolean squat = false;
 
@@ -98,7 +98,7 @@ public class DriveControlManager {
 
     public boolean shouldVtiltHorizontal() {
         boolean ret = false;
-        if (m_leftStick.getRawButton(10)) {
+        if (m_leftStick.getRawButton(10) || xbox.getRawButton(2)) {
             ret = true;
         } 
         return ret;
@@ -106,17 +106,25 @@ public class DriveControlManager {
 
     public boolean shouldJevoisVisionMode() {
         boolean ret = false;
-        if (m_rightStick.getRawButton(6)) {
-            ret = true;
-        }
+       // if (m_rightStick.getRawButton(6)) {
+       //     ret = true;
+       // }
         return ret;
     }
 
     public boolean shouldJevoisHumanMode() {
         boolean ret = false;
-        if (m_rightStick.getRawButton(7)) {
-            ret = true;
-        }
+        // if (m_rightStick.getRawButton(7)) {
+        //     ret = true;
+        // }
         return ret;
+    }
+
+    public boolean shouldTurnLeft() {
+        return m_rightStick.getRawButton(6);
+    }
+
+    public boolean shouldTurnRight() {
+        return m_rightStick.getRawButton(11);
     }
 }

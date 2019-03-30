@@ -20,9 +20,9 @@ public class Drivetrain {
     private Spark lightPower;
     public JeVoisInterface ji;
 
-    private final double visionPower = 0.2;
-    private final double visionTurnOffset = 0.03;
-    private final int visionRobotCenterPosition = 218 * JeVoisInterface.VIDEO_SCALE;
+    private final double visionPower = 0.3;
+    private final double visionTurnOffset = 0.06;
+    private final int visionRobotCenterPosition = 244 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenterError = 10 * JeVoisInterface.VIDEO_SCALE;
@@ -40,7 +40,7 @@ public class Drivetrain {
         lightPower.set(1.0);
 
         try {
-            ji = new JeVoisInterface();
+            ji = new JeVoisInterface(true);
         } catch (Exception ex) {
             ji = null;
         }
@@ -64,11 +64,10 @@ public class Drivetrain {
     // it is just a hint if vision see fewer targets it would just drive
     // to it
     public void driveVision(int targetSelectionHint, VideoTilt vtilt, Sonar sonar) {
-        VisionTarget vt = null;
-        ArrayList<VisionTarget> targets = null;
         if (ji != null) {
-            targets = ji.getVisionTargets();
-        }
+        VisionTarget vt = null;
+        ArrayList<VisionTarget> targets = ji.getVisionTargets();
+
         if (targets != null) {
             int numTargets = targets.size();
             // middle target hint
@@ -144,6 +143,7 @@ public class Drivetrain {
             // stop no vision targets
             DriverStation.reportWarning("driveVision: No targets", false);
             drive(0, 0, -1);
+        }
         }
     }
 }
