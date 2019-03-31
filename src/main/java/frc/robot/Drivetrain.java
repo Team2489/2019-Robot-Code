@@ -20,9 +20,9 @@ public class Drivetrain {
     private Spark lightPower;
     public JeVoisInterface ji;
 
-    private final double visionPower = 0.3;
-    private final double visionTurnOffset = 0.06;
-    private final int visionRobotCenterPosition = 244 * JeVoisInterface.VIDEO_SCALE;
+    private final double visionPower = 0.25;
+    private final double visionTurnOffset = 0.05; // 0.3 190 212 230 good
+    private final int visionRobotCenterPosition = 230 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenterError = 10 * JeVoisInterface.VIDEO_SCALE;
@@ -113,14 +113,14 @@ public class Drivetrain {
                         // double offset = visionTurnOffset;
                         double error = visionRobotCenterPosition - center;
                         double offset = visionTurnOffset + 
-                        visionTurnOffset * (error / (JeVoisInterface.STREAM_WIDTH_PX * JeVoisInterface.VIDEO_SCALE) / 2);
+                        3 * visionTurnOffset * (error / (JeVoisInterface.STREAM_WIDTH_PX * JeVoisInterface.VIDEO_SCALE) / 2);
                         drive(visionPower - offset, visionPower + offset, -1);
                     } else if (center > (visionRobotCenterPosition + visionRobotCenterError)) {
                         // drive forward, sligtly turn left
                         // double offset = visionTurnOffset;
                         double error = center - visionRobotCenterPosition;
                         double offset = visionTurnOffset + 
-                        visionTurnOffset * (error / (JeVoisInterface.STREAM_WIDTH_PX * JeVoisInterface.VIDEO_SCALE) / 2);
+                        3 * visionTurnOffset * (error / (JeVoisInterface.STREAM_WIDTH_PX * JeVoisInterface.VIDEO_SCALE) / 2);
                         drive(visionPower + offset, visionPower - offset, -1);
                     } else {
                         // we are right on target, drive forward

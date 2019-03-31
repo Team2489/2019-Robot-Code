@@ -51,8 +51,8 @@ public class Robot extends TimedRobot {
 
     front = CameraServer.getInstance().startAutomaticCapture(0);
     // front = CameraServer.getInstance().startAutomaticCapture("Microsoft Camera", 0); // give dashboard camera feed
-    front.setVideoMode(PixelFormat.kMJPEG, 640, 320, 15);
-    //front.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
+    // front.setVideoMode(PixelFormat.kMJPEG, 640, 320, 15);
+    front.setVideoMode(PixelFormat.kMJPEG, 320, 240, 15);
 
     // back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }

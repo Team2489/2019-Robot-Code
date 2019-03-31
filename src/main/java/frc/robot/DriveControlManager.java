@@ -51,13 +51,14 @@ public class DriveControlManager {
     }
 
     public void updateSquat() {
-        if(m_leftStick.getRawButton(4) && m_rightStick.getRawButton(5)) {
-            squat = true;
-            k = 0.6;
-        } else {
-            squat = false;
-            k = 0.75;
-        }
+        return;
+        // if(m_leftStick.getRawButton(4) && m_rightStick.getRawButton(5)) {
+        //    squat = true;
+        //    k = 0.6;
+        // } else {
+        //    squat = false;
+        //    k = 0.75;
+        // }
     }
 
     public boolean shouldVisionDrive() {
@@ -121,10 +122,10 @@ public class DriveControlManager {
     }
 
     public boolean shouldTurnLeft() {
-        return m_rightStick.getRawButton(6);
+        return (m_rightStick.getRawButton(6) || m_leftStick.getRawButton(4));
     }
 
     public boolean shouldTurnRight() {
-        return m_rightStick.getRawButton(11);
+        return (m_rightStick.getRawButton(11) || m_rightStick.getRawButton(5));
     }
 }
