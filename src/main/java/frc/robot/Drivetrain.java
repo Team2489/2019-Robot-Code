@@ -20,9 +20,9 @@ public class Drivetrain {
     private Spark lightPower;
     public JeVoisInterface ji;
 
-    private final double visionPower = 0.25;
-    private final double visionTurnOffset = 0.05; // 0.3 190 212 230 good
-    private final int visionRobotCenterPosition = 230 * JeVoisInterface.VIDEO_SCALE;
+    private final double visionPower = 0.35; // 0.25
+    private final double visionTurnOffset = 0.08; // 0.05
+    private final int visionRobotCenterPosition = 200 * JeVoisInterface.VIDEO_SCALE; //230
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenterError = 10 * JeVoisInterface.VIDEO_SCALE;
