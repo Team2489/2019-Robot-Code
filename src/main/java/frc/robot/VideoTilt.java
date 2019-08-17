@@ -3,9 +3,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Servo;
 
 public class VideoTilt {
-    private static final double ANGLE_HORIZONTAL = 140;
-    private static final double ANGLE_MAX = 170;
-    private static final double ANGLE_MIN = 90;
+    private static final double ANGLE_HORIZONTAL = 90;
+    private static final double ANGLE_MAX = 120;
+    private static final double ANGLE_MIN = 60;
     private static final double ANGLE_INCREMENT = 0.3;
 
     private Servo servo;

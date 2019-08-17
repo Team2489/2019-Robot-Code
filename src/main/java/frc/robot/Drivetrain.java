@@ -20,9 +20,10 @@ public class Drivetrain {
     private Spark lightPower;
     public JeVoisInterface ji;
 
-    private final double visionPower = 0.35; // 0.25
-    private final double visionTurnOffset = 0.08; // 0.05
-    private final int visionRobotCenterPosition = 200 * JeVoisInterface.VIDEO_SCALE; //230
+    private final double visionPower = 0.25; // 0.25 0.35
+    private final double visionTurnOffset = 0.08; // 0.05 0.08
+    // lesser movea to right
+    private final int visionRobotCenterPosition = 185 * JeVoisInterface.VIDEO_SCALE; // 200//230 // 185
     private final int visionRobotCenterError = 3 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenter = 120 * JeVoisInterface.VIDEO_SCALE;
     private final int visionRobotHorizontalCenterError = 10 * JeVoisInterface.VIDEO_SCALE;
@@ -60,49 +61,46 @@ public class Drivetrain {
         ddrive.tankDrive(kp * error, -kp * error, false);
     }
 
+    private final double maxDistance = 110;
+    private final double minDistance = 60;
+    private final double gain = 0.3; //0.5 //0.4
+
+    private double getSpeedRate(double distance){
+        double ret = 1.0;
+        if (distance > maxDistance){
+            ret += gain;
+        }else if (distance > minDistance){
+            ret += ((distance - minDistance) / (maxDistance - minDistance)) * gain;
+        } 
+        
+        return ret;
+    }
+
     // targetSelectionHint could be -1 for left target, 0 middle, 1 right
     // it is just a hint if vision see fewer targets it would just drive
     // to it
-    public void driveVision(int targetSelectionHint, VideoTilt vtilt, Sonar sonar) {
+    public void driveVision(int targetSelectionHint, VideoTilt vtilt, Sonar sonar ) {
         if (ji != null) {
         VisionTarget vt = null;
         ArrayList<VisionTarget> targets = ji.getVisionTargets();
 
         if (targets != null) {
-            int numTargets = targets.size();
-            // middle target hint
-            if (targetSelectionHint == 0) {
-                if (numTargets == 3) {
-                    // 3 targets; middle hint
-                    vt = targets.get(1);
-                } else if (numTargets == 2) {
-                    // 2 targets; middle hint pick up left one
-                    vt = targets.get(0);
-                } else {
-                    // 1 target
-                    vt = targets.get(0);
-                }
-            } else if (targetSelectionHint == -1) {
-                // in all cases
-                vt = targets.get(0);
-            } else if (targetSelectionHint == 1) {
-                if (numTargets == 3) {
-                    // 3 targets; right hint
-                    vt = targets.get(2);
-                } else if (numTargets == 2) {
-                    vt = targets.get(1);
-                } else {
-                    vt = targets.get(0);
-                }
-            }
+            // left target only
+            vt = targets.get(0);
 
             if (vt != null) {
                 int center = vt.x;
+                double distance = vt.distanceInches();
+                double angle = vt.getAngle();
+                double speedRate = getSpeedRate(distance);
+                if (angle > 5){
+
+                }
                 boolean stopDistance = false;
                 if (sonar != null) {
-                    double distance = sonar.getDistance();
+                    double sonarDistance = sonar.getDistance();
                     // System.out.println("distance = " + distance);
-                    if (distance < sonarStopDistnace) {
+                    if (sonarDistance < sonarStopDistnace) {
                         stopDistance = true;
                     }
                 }
@@ -114,17 +112,17 @@ public class Drivetrain {
                         double error = visionRobotCenterPosition - center;
                         double offset = visionTurnOffset + 
                         3 * visionTurnOffset * (error / (JeVoisInterface.STREAM_WIDTH_PX * JeVoisInterface.VIDEO_SCALE) / 2);
-                        drive(visionPower - offset, visionPower + offset, -1);
+                        drive((visionPower - offset) * speedRate, (visionPower + offset) * speedRate, -1);
                     } else if (center > (visionRobotCenterPosition + visionRobotCenterError)) {
                         // drive forward, sligtly turn left
                         // double offset = visionTurnOffset;
                         double error = center - visionRobotCenterPosition;
                         double offset = visionTurnOffset + 
                         3 * visionTurnOffset * (error / (JeVoisInterface.STREAM_WIDTH_PX * JeVoisInterface.VIDEO_SCALE) / 2);
-                        drive(visionPower + offset, visionPower - offset, -1);
+                        drive((visionPower + offset) * speedRate, (visionPower - offset) * speedRate, -1);
                     } else {
                         // we are right on target, drive forward
-                        drive(visionPower, visionPower, -1);
+                        drive(visionPower * speedRate, visionPower * speedRate, -1);
                     }
                     if (vtilt != null) {
                         int vcenter = vt.y;

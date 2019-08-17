@@ -179,7 +179,7 @@ public class JeVoisInterface {
     public void setCamVisionProcMode() {
         if (visionPort != null){
             sendCmdAndCheck("setcam autoexp 1"); //Disable auto exposure
-            sendCmdAndCheck("setcam absexp 25"); //Force exposure to a low value for vision processing
+            sendCmdAndCheck("setcam absexp 130"); //Force exposure to a low value for vision processing
         }
     }
     

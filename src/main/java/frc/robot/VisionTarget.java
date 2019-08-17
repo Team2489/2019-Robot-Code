@@ -1,8 +1,14 @@
 package frc.robot;
-
+import java.lang.Math;
 // import java.lang.Integer;
 
 public class VisionTarget {
+    // 60 degrees
+    // private final double distancek = 3900.0;
+    private final double distancek = 1950.0;
+    private final double baseRatio = 2.0;
+
+
     public String id;
     public int x;
     public int y;
@@ -38,5 +44,17 @@ public class VisionTarget {
         System.out.println("x = " + x);
         System.out.println("y = " + y);
         System.out.println("height = " + height);
+    }
+
+    public double ratio() {
+        return width / height;
+    }
+
+    public double distanceInches(){
+        return distancek / height;
+    }
+    
+    public double getAngle(){
+        return Math.acos(ratio() / baseRatio);
     }
 }
