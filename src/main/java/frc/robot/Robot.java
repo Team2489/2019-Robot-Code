@@ -32,6 +32,7 @@ public class Robot extends TimedRobot {
   private VideoTilt vtilt;
   private Sonar sonar;
 
+  private BallDispenser ballDispenser;
 
   @Override
   public void robotInit() {
@@ -44,6 +45,7 @@ public class Robot extends TimedRobot {
     // dtrain = new Drivetrain(7, 6, 2, 9);
     arm = new Arm(1); // initialize Arm with TalonSRX index
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
+    ballDispenser = new BallDispenser(2, 3);
 
     vtilt = new VideoTilt(2);
     // sonar = new Sonar(1);
@@ -95,16 +97,12 @@ public class Robot extends TimedRobot {
       vtilt.down();
     }
 
-    if (dcm.shouldJevoisHumanMode()) {
-      if (dtrain.ji != null) {
-        dtrain.ji.setCamHumanDriverModeAsync();
-      }
+    if (dcm.shouldBallDispenserPush()) {
+      ballDispenser.push();
     }
 
-    if (dcm.shouldJevoisVisionMode()) {
-      if (dtrain.ji != null) {
-        dtrain.ji.setCamVisionProcModeAsync();
-      }
+    if (dcm.shouldBallDispenserRetract()) {
+      ballDispenser.retract();
     }
 
     double sp = 50.0;

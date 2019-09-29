@@ -105,19 +105,19 @@ public class DriveControlManager {
         return ret;
     }
 
-    public boolean shouldJevoisVisionMode() {
+    public boolean shouldBallDispenserPush() {
         boolean ret = false;
-       // if (m_rightStick.getRawButton(6)) {
-       //     ret = true;
-       // }
+        if (m_rightStick.getRawButton(7)) {
+           ret = true;
+        }
         return ret;
     }
 
-    public boolean shouldJevoisHumanMode() {
+    public boolean shouldBallDispenserRetract() {
         boolean ret = false;
-        // if (m_rightStick.getRawButton(7)) {
-        //     ret = true;
-        // }
+        if (m_rightStick.getRawButton(8)) {
+            ret = true;
+        }
         return ret;
     }
 
