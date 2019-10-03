@@ -3,7 +3,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class Cargo {
 
     private DoubleSolenoid cargoReleaser;
-
+    
     public Cargo(int pcmIndexOne, int pcmIndexTwo){
         cargoReleaser = new DoubleSolenoid(pcmIndexOne, pcmIndexTwo); 
     }

@@ -37,6 +37,5 @@ public class Constants {
 		* Gains(kp, ki, kd, kf, izone, peak output);
 		*/
 
-	static final Gains kGains = new Gains(0.001 * 1023 / 2 * 1.5, 0.0005, 0.0, 0.0, 0, 1.0);
-
+	static final Gains kGains = new Gains(0.76725, 0.0005, 0.0, 0.0, 0, 1.0);
 }

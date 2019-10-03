@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
   @Override
 
   public void robotInit() {
-
     dcm = new DriveControlManager(); // DCM contains all driver configurations and input
     dtrain = new Drivetrain(12, 11, 10, 9); // initialize drivetrain with given TalonSRX indices
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
@@ -48,23 +47,23 @@ public class Robot extends TimedRobot {
     back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
 
     /* Factory default hardware to prevent unexpected behavior */
-		arm.configFactoryDefault();
+    arm.configFactoryDefault();
 
-		/* Configure Sensor Source for Pirmary PID */
-		arm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
-											Constants.kPIDLoopIdx, 
+    /* Configure Sensor Source for Pirmary PID */
+    arm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
+                      Constants.kPIDLoopIdx, 
                       Constants.kTimeoutMs);
                       arm.setSensorPhase(true); 
 
-    /* Set relevant frame periods to be at least as fast as periodic rate */
-		arm.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
-		arm.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+    // /* Set relevant frame periods to be at least as fast as periodic rate */
+    arm.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
+    arm.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
 
-		/* Set the peak and nominal outputs */
-		arm.configNominalOutputForward(0, Constants.kTimeoutMs);
-		arm.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		arm.configPeakOutputForward(1, Constants.kTimeoutMs);
-		arm.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+    // /* Set the peak and nominal outputs */
+    arm.configNominalOutputForward(0, Constants.kTimeoutMs);
+    arm.configNominalOutputReverse(0, Constants.kTimeoutMs);
+    arm.configPeakOutputForward(1, Constants.kTimeoutMs);
+    arm.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
     arm.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
     arm.config_kF(Constants.kSlotIdx, Constants.kGains.kF, Constants.kTimeoutMs);
@@ -81,6 +80,7 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
+
     if(dcm.shouldReverse()){
       reverse = !reverse;
     }
@@ -99,7 +99,7 @@ public class Robot extends TimedRobot {
 
     if(dcm.shouldGetBall()) {
       cargoGetter.getBall();
-    } else if(dcm.shouldReleaseBall()) {
+    }else if(dcm.shouldReleaseBall()) {
       cargoGetter.releaseBall();
     }
 
@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
     if (arm.getSelectedSensorPosition() > 1200)
       pwm = 0;
 
-    // arm.set(ControlMode.PercentOutput, pwm);
+    arm.set(ControlMode.PercentOutput, pwm);
 
     if(j.getRawButton(4)){
       arm.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
