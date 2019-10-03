@@ -37,6 +37,18 @@ public class DriveControlManager {
         return m_leftStick.getRawButton(2) || m_leftStick.getRawButton(3) || xbox.getRawButton(7);
     }
 
+    public boolean shouldGetBall() {
+        return m_rightStick.getRawButton(7);
+    }
+
+    public boolean shouldReleaseBall() {
+        return m_rightStick.getRawButton(8);
+    }
+    
+    public boolean shouldReverse() {
+        return m_leftStick.getRawButton(1);
+    }
+
     public int shouldEnterOrExit() { // 0 = exit, 1 = enter, -1 = human control
         if(m_rightStick.getTrigger()){
             return 0;

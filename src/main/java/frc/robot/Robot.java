@@ -9,81 +9,154 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.drive.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Timer;
-
 import edu.wpi.cscore.*;
 
+import com.ctre.phoenix.motorcontrol.*;
+
+import com.ctre.phoenix.motorcontrol.can.*;
+
+
 public class Robot extends TimedRobot {
-  
+
   private HatchGrabber hatchGrabber;
   private DriveControlManager dcm;
   private Drivetrain dtrain;
-  private Arm arm;
   private Spark ringLight;
-
-  private Timer moveOffHab;
-
   private UsbCamera front, back;
+  private TalonSRX arm = new TalonSRX(1);
+  private Spark led = new Spark(1);
+  private Cargo cargoGetter;
+  private int ktimeoutMs = 10;
+  private double pwm = 0, prevV = 0;
+  private int targetPos = 600;
+  private boolean reverse = false;
 
-  private double howLongShouldWeMove;
+  Joystick j = new Joystick(1);
+
   @Override
+
   public void robotInit() {
-    howLongShouldWeMove = 3.0;
-    moveOffHab = new Timer();
+
     dcm = new DriveControlManager(); // DCM contains all driver configurations and input
     dtrain = new Drivetrain(12, 11, 10, 9); // initialize drivetrain with given TalonSRX indices
-    arm = new Arm(1); // initialize Arm with TalonSRX index
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
-
+    cargoGetter = new Cargo(2, 3); //init Cargo Grabber
     front = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
     back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
+
+    /* Factory default hardware to prevent unexpected behavior */
+		arm.configFactoryDefault();
+
+		/* Configure Sensor Source for Pirmary PID */
+		arm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
+											Constants.kPIDLoopIdx, 
+                      Constants.kTimeoutMs);
+                      arm.setSensorPhase(true); 
+
+    /* Set relevant frame periods to be at least as fast as periodic rate */
+		arm.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
+		arm.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+
+		/* Set the peak and nominal outputs */
+		arm.configNominalOutputForward(0, Constants.kTimeoutMs);
+		arm.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		arm.configPeakOutputForward(1, Constants.kTimeoutMs);
+		arm.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
+    arm.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
+    arm.config_kF(Constants.kSlotIdx, Constants.kGains.kF, Constants.kTimeoutMs);
+    arm.config_kP(Constants.kSlotIdx, Constants.kGains.kP, Constants.kTimeoutMs);
+    arm.config_kI(Constants.kSlotIdx, Constants.kGains.kI, Constants.kTimeoutMs);
+    arm.config_kD(Constants.kSlotIdx, Constants.kGains.kD, Constants.kTimeoutMs);
+
+    /* Set acceleration and vcruise velocity - see documentation */
+    arm.configMotionCruiseVelocity(80, Constants.kTimeoutMs);
+    arm.configMotionAcceleration(100, Constants.kTimeoutMs);
+
+    /* Zero the sensor */
+    arm.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
   }
 
   public void teleopPeriodic() {
+    if(dcm.shouldReverse()){
+      reverse = !reverse;
+    }
 
-    dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
-    // arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
-    arm.pidActuate(-11);
+    if(!reverse){
+      dtrain.drive(-j.getY(), -j.getRawAxis(3), -1);
+    }else{
+      dtrain.drive(j.getRawAxis(3), j.getY(), -1);
+    }
+
     if(dcm.shouldGrab()) {
       hatchGrabber.grab();
     } else if(dcm.shouldRelease()) {
       hatchGrabber.release();
     }
 
-    double sp = 50.0;
+    if(dcm.shouldGetBall()) {
+      cargoGetter.getBall();
+    } else if(dcm.shouldReleaseBall()) {
+      cargoGetter.releaseBall();
+    }
 
-    SmartDashboard.putNumber("angle", arm.getAngle());
-    SmartDashboard.putNumber("setpoint", sp);
-    SmartDashboard.putNumber("Error", sp - arm.getAngle());
+    pwm = j.getRawAxis(3);
+    double currV = arm.getSelectedSensorVelocity();
+    double accel = (currV - prevV) / 0.02;
+    prevV = currV;
 
-    // System.out.println(arm.getAngle());
+    if (arm.getSelectedSensorPosition() > 1200)
+      pwm = 0;
 
-    // System.out.println(dtrain.getCenter());
+    // arm.set(ControlMode.PercentOutput, pwm);
 
-    // ringLight.set(dcm.getArmVelocity());
+    if(j.getRawButton(4)){
+      arm.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    }
+    if(j.getRawButton(1)){
+      targetPos = 600;
+    }
+    else if(j.getRawButton(2)){
+      targetPos = 750;
+    }
+    else if(j.getRawButton(3)){
+      targetPos = 900;
+    }
+    else{
+      targetPos = 0;
+    }
 
-    dcm.updateSquat();
+    SmartDashboard.putNumber("position", arm.getSelectedSensorPosition());
+    SmartDashboard.putNumber("velocity", arm.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("acceleration", accel);
+    SmartDashboard.putNumber("error", arm.getClosedLoopError() );
+    SmartDashboard.putNumber("pwm", arm.getMotorOutputPercent());
+    arm.set(ControlMode.PercentOutput, pwm);
+    
+    int kMeasuredPosHorizontal = 750; //Position measured when arm is horizontal 
+    
+    double kTicksPerDegree = 4096 / 360; //Sensor is 1:1 with arm rotation
+    int currentPos = arm.getSelectedSensorPosition();
+    double degrees = (currentPos - kMeasuredPosHorizontal) / kTicksPerDegree; 
+    double radians = java.lang.Math.toRadians(degrees); 
+    double cosineScalar = java.lang.Math.cos(radians);
+
+    double maxGravityFF = 0.3049;
+    double feedFwdTerm = maxGravityFF * cosineScalar;
+    arm.set(ControlMode.Position, targetPos, DemandType.ArbitraryFeedForward, feedFwdTerm);
+    // arm.set(ControlMode.MotionMagic, targetPos, DemandType.ArbitraryFeedForward, maxGravityFF * cosineScalar);
   }
 
   public void autonomousInit() {
-    moveOffHab.start();
-    hatchGrabber.grab();
+    
   }
 
   public void autonomousPeriodic() {
-    dtrain.drive(dcm.getLeftVelocity() * 0.5, dcm.getRightVelocity() * 0.5, dcm.shouldEnterOrExit());
-    arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
-
-    if(dcm.shouldGrab()) {
-      hatchGrabber.grab();
-    } else if(dcm.shouldRelease()) {
-      hatchGrabber.release();
-    }
-
-    // ringLight.set(dcm.getArmVelocity());
-
-    dcm.updateSquat();
+    led.set(j.getY());
   }
+
 }
 //parth was here
