@@ -38,11 +38,11 @@ public class DriveControlManager {
     }
 
     public boolean shouldGetBall() {
-        return m_rightStick.getRawButton(8);
+        return m_rightStick.getTrigger();
     }
 
     public boolean shouldReleaseBall() {
-        return m_rightStick.getRawButton(9);
+        return m_leftStick.getTrigger();
     }
     
     public boolean shouldReverse() {
@@ -50,11 +50,11 @@ public class DriveControlManager {
     }
 
     public int shouldEnterOrExit() { // 0 = exit, 1 = enter, -1 = human control
-        if(m_rightStick.getTrigger()){
-            return 0;
-        }else if(m_leftStick.getTrigger()){
-            return 1;
-        }
+        // if(m_rightStick.getTrigger()){
+        //     return 0;
+        // }else if(m_leftStick.getTrigger()){
+        //     return 1;
+        // }
         return -1;
     }
     

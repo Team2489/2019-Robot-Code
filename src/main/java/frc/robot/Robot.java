@@ -152,11 +152,79 @@ public class Robot extends TimedRobot {
   }
 
   public void autonomousInit() {
-    
+        // moveOffHab.start();
+        hatchGrabber.release();
   }
 
   public void autonomousPeriodic() {
-    led.set(j.getY());
+    if(dcm.shouldReverse()){
+      reverse = !reverse;
+    }
+
+    if(!reverse){
+      dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
+    }else{
+      dtrain.drive(-dcm.getRightVelocity(), -dcm.getLeftVelocity(), dcm.shouldEnterOrExit());
+    }
+
+    if(dcm.shouldGrab()) {
+      hatchGrabber.grab();
+    } else if(dcm.shouldRelease()) {
+      hatchGrabber.release();
+    }
+
+    if(dcm.shouldGetBall()) {
+      cargoGetter.getBall();
+    }else if(dcm.shouldReleaseBall()) {
+      cargoGetter.releaseBall();
+    }
+
+    pwm = j.getRawAxis(3);
+    double currV = arm.getSelectedSensorVelocity();
+    double accel = (currV - prevV) / 0.02;
+    prevV = currV;
+
+    if (arm.getSelectedSensorPosition() > 1200)
+      pwm = 0;
+
+   
+
+    if(j.getRawButton(4)){
+      arm.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+    }
+    if(j.getRawButton(1)){
+      targetPos = 600;
+    }
+    else if(j.getRawButton(2)){
+      targetPos = 750;
+    }
+    else if(j.getRawButton(3)){
+      targetPos = 900;
+    }
+    else{
+      arm.set(ControlMode.PercentOutput, dcm.getArmVelocity());
+      return;
+    }
+
+    SmartDashboard.putNumber("position", arm.getSelectedSensorPosition());
+    SmartDashboard.putNumber("velocity", arm.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("acceleration", accel);
+    SmartDashboard.putNumber("error", arm.getClosedLoopError() );
+    SmartDashboard.putNumber("pwm", arm.getMotorOutputPercent());
+    arm.set(ControlMode.PercentOutput, pwm);
+    
+    int kMeasuredPosHorizontal = 750; //Position measured when arm is horizontal 
+    
+    double kTicksPerDegree = 4096 / 360; //Sensor is 1:1 with arm rotation
+    int currentPos = arm.getSelectedSensorPosition();
+    double degrees = (currentPos - kMeasuredPosHorizontal) / kTicksPerDegree; 
+    double radians = java.lang.Math.toRadians(degrees); 
+    double cosineScalar = java.lang.Math.cos(radians);
+
+    double maxGravityFF = 0.3049;
+    double feedFwdTerm = maxGravityFF * cosineScalar;
+    arm.set(ControlMode.Position, targetPos, DemandType.ArbitraryFeedForward, feedFwdTerm);
+    // arm.set(ControlMode.MotionMagic, targetPos, DemandType.ArbitraryFeedForward, maxGravityFF * cosineScalar);
   }
 
 }
