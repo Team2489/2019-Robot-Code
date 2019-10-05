@@ -45,8 +45,12 @@ public class DriveControlManager {
         return m_leftStick.getTrigger();
     }
     
-    public boolean shouldReverse() {
+    public boolean shouldForward() {
         return m_rightStick.getRawButton(5);
+    }
+
+    public boolean shouldReverse() {
+        return m_leftStick.getRawButton(5);
     }
 
     public int shouldEnterOrExit() { // 0 = exit, 1 = enter, -1 = human control

@@ -80,9 +80,10 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
-
-    if(dcm.shouldReverse()){
-      reverse = !reverse;
+    if dcm.shouldReverse(){
+      reverse = true;
+    } else if dcm.shouldForward(){
+      reverse = false;
     }
 
     if(!reverse){
