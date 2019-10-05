@@ -37,12 +37,16 @@ public class DriveControlManager {
         return m_leftStick.getRawButton(2) || m_leftStick.getRawButton(3) || xbox.getRawButton(7);
     }
 
+    public boolean shouldReverse() {
+        return m_rightStick.getRawButton(5);
+    }
+
     public int shouldEnterOrExit() { // 0 = exit, 1 = enter, -1 = human control
-        if(m_rightStick.getTrigger()){
-            return 0;
-        }else if(m_leftStick.getTrigger()){
-            return 1;
-        }
+        // if(m_rightStick.getTrigger()){
+        //     return 0;
+        // }else if(m_leftStick.getTrigger()){
+        //     return 1;
+        // }
         return -1;
     }
     
@@ -106,26 +110,18 @@ public class DriveControlManager {
     }
 
     public boolean shouldBallDispenserPush() {
-        boolean ret = false;
-        if (m_rightStick.getRawButton(7)) {
-           ret = true;
-        }
-        return ret;
+        return m_leftStick.getTrigger();
     }
 
     public boolean shouldBallDispenserRetract() {
-        boolean ret = false;
-        if (m_rightStick.getRawButton(8)) {
-            ret = true;
-        }
-        return ret;
+        return m_rightStick.getTrigger();
     }
 
     public boolean shouldTurnLeft() {
-        return (m_rightStick.getRawButton(6) || m_leftStick.getRawButton(4));
+        return (m_rightStick.getRawButton(6));
     }
 
     public boolean shouldTurnRight() {
-        return (m_rightStick.getRawButton(11) || m_rightStick.getRawButton(5));
+        return (m_rightStick.getRawButton(11));
     }
 }
