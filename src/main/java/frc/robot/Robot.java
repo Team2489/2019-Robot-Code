@@ -15,6 +15,11 @@ import edu.wpi.cscore.VideoMode.PixelFormat;
 
 import edu.wpi.cscore.*;
 
+
+import com.ctre.phoenix.motorcontrol.*;
+
+import com.ctre.phoenix.motorcontrol.can.*;
+
 public class Robot extends TimedRobot {
   
   private HatchGrabber hatchGrabber;
@@ -34,6 +39,10 @@ public class Robot extends TimedRobot {
 
   private BallDispenser ballDispenser;
 
+  private TalonSRX _talon = new TalonSRX(1);
+
+  Joystick j = new Joystick(2);
+
   @Override
   public void robotInit() {
     howLongShouldWeMove = 3.0;
@@ -47,6 +56,44 @@ public class Robot extends TimedRobot {
     hatchGrabber = new HatchGrabber(0, 1); // initialize Hatch Grabber
     ballDispenser = new BallDispenser(2, 3);
 
+
+    /* Factory default hardware to prevent unexpected behavior */
+		_talon.configFactoryDefault();
+
+
+		/* Configure Sensor Source for Pirmary PID */
+		_talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
+											Constants.kPIDLoopIdx, 
+                      Constants.kTimeoutMs);
+    _talon.setSensorPhase(true); 
+
+    /* Set relevant frame periods to be at least as fast as periodic rate */
+		_talon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.kTimeoutMs);
+		_talon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.kTimeoutMs);
+
+
+
+		/* Set the peak and nominal outputs */
+		_talon.configNominalOutputForward(0, Constants.kTimeoutMs);
+		_talon.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		_talon.configPeakOutputForward(1, Constants.kTimeoutMs);
+		_talon.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
+
+
+    _talon.selectProfileSlot(Constants.kSlotIdx, Constants.kPIDLoopIdx);
+    _talon.config_kF(Constants.kSlotIdx, Constants.kGains.kF, Constants.kTimeoutMs);
+    _talon.config_kP(Constants.kSlotIdx, Constants.kGains.kP, Constants.kTimeoutMs);
+    _talon.config_kI(Constants.kSlotIdx, Constants.kGains.kI, Constants.kTimeoutMs);
+    _talon.config_kD(Constants.kSlotIdx, Constants.kGains.kD, Constants.kTimeoutMs);
+
+    /* Set acceleration and vcruise velocity - see documentation */
+    _talon.configMotionCruiseVelocity(80, Constants.kTimeoutMs);
+    _talon.configMotionAcceleration(100, Constants.kTimeoutMs);
+
+    /* Zero the sensor */
+    _talon.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+
     vtilt = new VideoTilt(2);
     // sonar = new Sonar(1);
     sonar = null;
@@ -59,6 +106,9 @@ public class Robot extends TimedRobot {
     // back = CameraServer.getInstance().startAutomaticCapture(); // give dashboard camera feed
   }
 
+  private double pwm = 0, prevV = 0;
+  private int targetPos = 600;
+
   public void teleopPeriodic() {
     if (dcm.shouldVisionDrive()) {
       // drive based on JeVois info
@@ -67,7 +117,7 @@ public class Robot extends TimedRobot {
       // drive on Joysticks
       dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
     }
-    arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
+    
     if(dcm.shouldTurnLeft()) {
       dtrain.drive(-0.2 / dcm.k, 0.2 / dcm.k,  dcm.shouldEnterOrExit());
     }
@@ -107,9 +157,48 @@ public class Robot extends TimedRobot {
 
     double sp = 50.0;
 
-    SmartDashboard.putNumber("angle", arm.getAngle());
-    SmartDashboard.putNumber("setpoint", sp);
-    SmartDashboard.putNumber("Error", sp - arm.getAngle());
+    pwm = j.getRawAxis(3);
+
+    double currV = _talon.getSelectedSensorVelocity();
+    double accel = (currV - prevV) / 0.02;
+    prevV = currV;
+
+    if (_talon.getSelectedSensorPosition() > 1200)
+      pwm = 0;
+
+    // _talon.set(ControlMode.PercentOutput, pwm);
+
+    // if(j.getRawButton(4))
+    // _talon.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+
+    if(j.getRawButton(1))
+      targetPos = 600;
+    else if(j.getRawButton(2))
+      targetPos = 750;
+    else if(j.getRawButton(3))
+      targetPos = 900;
+    else
+      arm.actuate(dcm.getArmVelocity(), dcm.shouldFreezeArm());
+
+    SmartDashboard.putNumber("position", _talon.getSelectedSensorPosition());
+    SmartDashboard.putNumber("velocity", _talon.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("acceleration", accel);
+    SmartDashboard.putNumber("error", _talon.getClosedLoopError() );
+    SmartDashboard.putNumber("pwm", _talon.getMotorOutputPercent());
+    _talon.set(ControlMode.PercentOutput, pwm);
+    
+    int kMeasuredPosHorizontal = 750; //Position measured when arm is horizontal 
+    
+    double kTicksPerDegree = 4096 / 360; //Sensor is 1:1 with arm rotation
+    int currentPos = _talon.getSelectedSensorPosition();
+    double degrees = (currentPos - kMeasuredPosHorizontal) / kTicksPerDegree; 
+    double radians = java.lang.Math.toRadians(degrees); 
+    double cosineScalar = java.lang.Math.cos(radians);
+
+    double maxGravityFF = 0.3049;
+    double feedFwdTerm = maxGravityFF * cosineScalar;
+    _talon.set(ControlMode.Position, targetPos, DemandType.ArbitraryFeedForward, feedFwdTerm);
+    
 
     // System.out.println(arm.getAngle());
 
