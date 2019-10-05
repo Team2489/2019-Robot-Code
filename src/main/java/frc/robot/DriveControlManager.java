@@ -38,11 +38,11 @@ public class DriveControlManager {
     }
 
     public boolean shouldGetBall() {
-        return m_rightStick.getRawButton(7);
+        return m_rightStick.getRawButton(8);
     }
 
     public boolean shouldReleaseBall() {
-        return m_rightStick.getRawButton(8);
+        return m_rightStick.getRawButton(9);
     }
     
     public boolean shouldReverse() {

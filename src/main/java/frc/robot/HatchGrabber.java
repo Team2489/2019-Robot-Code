@@ -3,10 +3,12 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class HatchGrabber {
 
     private DoubleSolenoid hatchGrabber;
+    // private Compressor pneumaticsCompressor;
     boolean grabbing = false;
 
     public HatchGrabber(int pcmIndexOne, int pcmIndexTwo){
-        hatchGrabber = new DoubleSolenoid(pcmIndexOne, pcmIndexTwo); 
+        // pneumaticsCompressor = new Compressor(20);
+        hatchGrabber = new DoubleSolenoid(20, pcmIndexOne, pcmIndexTwo); 
     }
 
     public void release() {

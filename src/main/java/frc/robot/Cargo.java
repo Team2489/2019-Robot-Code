@@ -5,7 +5,7 @@ public class Cargo {
     private DoubleSolenoid cargoReleaser;
     
     public Cargo(int pcmIndexOne, int pcmIndexTwo){
-        cargoReleaser = new DoubleSolenoid(pcmIndexOne, pcmIndexTwo); 
+        cargoReleaser = new DoubleSolenoid(20, pcmIndexOne, pcmIndexTwo); 
     }
 
     public void releaseBall() {

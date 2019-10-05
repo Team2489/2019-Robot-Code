@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
   private int targetPos = 600;
   private boolean reverse = false;
 
-  Joystick j = new Joystick(1);
+  Joystick j = new Joystick(2);
 
   @Override
 
@@ -86,9 +86,9 @@ public class Robot extends TimedRobot {
     }
 
     if(!reverse){
-      dtrain.drive(-j.getY(), -j.getRawAxis(3), -1);
+      dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
     }else{
-      dtrain.drive(j.getRawAxis(3), j.getY(), -1);
+      dtrain.drive(-dcm.getRightVelocity(), -dcm.getLeftVelocity(), dcm.shouldEnterOrExit());
     }
 
     if(dcm.shouldGrab()) {
@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
     if (arm.getSelectedSensorPosition() > 1200)
       pwm = 0;
 
-    arm.set(ControlMode.PercentOutput, pwm);
+   
 
     if(j.getRawButton(4)){
       arm.setSelectedSensorPosition(0, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
@@ -126,7 +126,8 @@ public class Robot extends TimedRobot {
       targetPos = 900;
     }
     else{
-      targetPos = 0;
+      arm.set(ControlMode.PercentOutput, dcm.getArmVelocity());
+      return;
     }
 
     SmartDashboard.putNumber("position", arm.getSelectedSensorPosition());
