@@ -41,6 +41,8 @@ public class Robot extends TimedRobot {
 
   private BallDispenser ballDispenser;
 
+  private boolean reverse = false;
+
   Joystick j = new Joystick(2);
 
   @Override
@@ -101,11 +103,19 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
+    if (dcm.shouldReverse()) {
+      reverse = true;
+    } else {
+      if (dcm.shouldForward()){
+        reverse = false;
+      }
+    }
+
     if (dcm.shouldVisionDrive()) {
       // drive based on JeVois info
       dtrain.driveVision(dcm.getVisionHint(), vtilt, null);
     } else {
-      if(!dcm.shouldReverse()){
+      if(!reverse){
         dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
       } else  {
         dtrain.drive(-dcm.getRightVelocity(), -dcm.getLeftVelocity(), dcm.shouldEnterOrExit());
@@ -206,11 +216,19 @@ public class Robot extends TimedRobot {
   }
 
   public void autonomousPeriodic() {
+    if (dcm.shouldReverse()) {
+      reverse = true;
+    } else {
+      if (dcm.shouldForward()){
+        reverse = false;
+      }
+    }
+
     //if (dcm.shouldVisionDrive()) {
       // drive based on JeVois info
       // dtrain.driveVision(dcm.getVisionHint(), vtilt, null);
     //} else {
-      if(!dcm.shouldReverse()){
+      if(!reverse) {
         dtrain.drive(dcm.getLeftVelocity(), dcm.getRightVelocity(), dcm.shouldEnterOrExit());
       } else  {
         dtrain.drive(-dcm.getRightVelocity(), -dcm.getLeftVelocity(), dcm.shouldEnterOrExit());

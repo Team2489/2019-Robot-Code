@@ -37,8 +37,12 @@ public class DriveControlManager {
         return m_leftStick.getRawButton(2) || m_leftStick.getRawButton(3) || xbox.getRawButton(7);
     }
 
-    public boolean shouldReverse() {
+    public boolean shouldForward() {
         return m_rightStick.getRawButton(5);
+    }
+
+    public boolean shouldReverse() {
+        return m_leftStick.getRawButton(5);
     }
 
     public int shouldEnterOrExit() { // 0 = exit, 1 = enter, -1 = human control
@@ -67,7 +71,7 @@ public class DriveControlManager {
 
     public boolean shouldVisionDrive() {
         boolean ret = false;
-        if(m_rightStick.getRawButton(4) || m_leftStick.getRawButton(5)) {
+        if(m_rightStick.getRawButton(4)) {
             ret = true;
         }
         return ret;
@@ -75,11 +79,11 @@ public class DriveControlManager {
 
     public int getVisionHint() {
         int ret = 0;
-        if (m_rightStick.getRawButton(4)) {
-            ret = 1;
-        } else if(m_leftStick.getRawButton(5)) {
-            ret = -1;
-        }
+        // if (m_rightStick.getRawButton(4)) {
+        //    ret = 1;
+        // } else if(m_leftStick.getRawButton(5)) {
+        //    ret = -1;
+        // }
         return ret;
     }
 
