@@ -9,14 +9,13 @@ public class DriveControlManager {
 
     public double k = 0.8;
     private double kArm = 0.75;
-    private boolean squat = false;
 
     public DriveControlManager() {
         m_leftStick = new Joystick(0);
         m_rightStick = new Joystick(1);
         xbox = new Joystick(2);
     }
-
+    
     public double getLeftVelocity() {
         return -k * m_leftStick.getY();
     }
@@ -30,11 +29,11 @@ public class DriveControlManager {
     }
 
     public boolean shouldGrab() {
-        return m_rightStick.getRawButton(2) || m_rightStick.getRawButton(3) || xbox.getRawButton(8);
+        return m_rightStick.getRawButton(3) || xbox.getRawButton(8);
     }
 
     public boolean shouldRelease() {
-        return m_leftStick.getRawButton(2) || m_leftStick.getRawButton(3) || xbox.getRawButton(7);
+        return m_leftStick.getRawButton(3) || xbox.getRawButton(7);
     }
 
     public boolean shouldForward() {
@@ -59,14 +58,14 @@ public class DriveControlManager {
     }
 
     public void updateSquat() {
+        // if(m_leftStick)
+        // k = (m_leftStick.getZ() + 1) / 2;
+        if(m_leftStick.getRawButton(2) && m_rightStick.getRawButton(2)) {
+           k = 0.4;
+        } else {
+           k = 0.8;
+        }
         return;
-        // if(m_leftStick.getRawButton(4) && m_rightStick.getRawButton(5)) {
-        //    squat = true;
-        //    k = 0.6;
-        // } else {
-        //    squat = false;
-        //    k = 0.75;
-        // }
     }
 
     public boolean shouldVisionDrive() {

@@ -103,6 +103,7 @@ public class Robot extends TimedRobot {
   }
 
   public void teleopPeriodic() {
+    dcm.updateSquat();
     if (dcm.shouldReverse()) {
       reverse = true;
     } else {
@@ -207,7 +208,6 @@ public class Robot extends TimedRobot {
     arm.set(ControlMode.Position, targetPos, DemandType.ArbitraryFeedForward, feedFwdTerm);
     // arm.set(ControlMode.MotionMagic, targetPos, DemandType.ArbitraryFeedForward, maxGravityFF * cosineScalar);
 
-    dcm.updateSquat();
   }
 
   public void autonomousInit() {
